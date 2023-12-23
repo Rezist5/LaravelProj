@@ -25,9 +25,8 @@ Route::get('/lessons', function () {
 })->middleware('auth');
 
 
-Route::get('/schedule/{date}', [ScheduleController::class, 'getClassSchedule'])
-    ->name('schedule')
-    ->where('date', $currentDate);
+Route::get('/lessons/{date}', [ScheduleController::class, 'getLessonsByDate'])->name('lessons.by.date');
+
 // Маршруты для отображения формы логина и обработки логина
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);

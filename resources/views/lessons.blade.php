@@ -13,36 +13,12 @@
 
 <main>
     <section>
-    @for($day = 1; $day <= 5; $day++)
-        @php
-            $lessonsForDay = $lessons->filter(function($lesson) use ($currentDate, $day) {
-                return $lesson->LessonDate->format('N') == $day; 
-            });
-        @endphp
+    <form action="{{ route('schedule.byDate') }}" method="GET">
+        <label for="lessonDate">Выберите дату:</label>
+        <input type="date" id="lessonDate" name="lessonDate">
 
-        @if($lessonsForDay->count() > 0)
-            <h2>Расписание на {{ $currentDate->addDays($day - 1)->format('l') }}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Номер пары</th>
-                        <th>Предмет</th>
-                        <th>Учитель</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($lessonsForDay as $lesson)
-                        <tr>
-                            <td>{{ $lesson->LessonNumber }}</td>
-                            <td>{{ $lesson->teacher->subject->name }}</td>
-                            <td>{{ $lesson->teacher->name }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-    @endfor
+        <button type="submit">Показать уроки</button>
+    </form>
     </section>
-    <!-- Другие разделы вашей страницы, если они есть -->
 </main>
 @endsection
