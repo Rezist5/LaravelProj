@@ -1,0 +1,17 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class TaskModel extends Model
+{
+    protected $fillable = [
+        'SubjectID',
+        'ClassId',
+        'title',
+        'description',
+    ];
+    
+}
+

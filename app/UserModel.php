@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
     use Authenticatable, CanResetPassword;
-    protected $table = 'User'; // Указываем имя таблицы, если оно отличается от стандартного формата Laravel
+    protected $table = 'User'; 
 
-    protected $primaryKey = 'Id'; // Указываем имя первичного ключа, если оно отличается от 'id'
+    protected $primaryKey = 'Id';
 
     protected $fillable = [
         'Id',
@@ -21,7 +21,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         'UserId'
     ];
 
-    public $timestamps = false; // Если у вас нет полей 'created_at' и 'updated_at', установите значение false
+    public $timestamps = false; 
 
     private function CreateNewUserStudent($name, $password, $usid, $firstname, $surname, $thirdname, $avgmark, $classid, $grade)
     {
