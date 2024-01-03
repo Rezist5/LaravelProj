@@ -2,38 +2,32 @@
 
 namespace App;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements AuthenticatableContract, CanResetPasswordContract
 {
-    use Notifiable;
+    protected $table = 'User'; 
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $primaryKey = 'Id';
+
     protected $fillable = [
-        'name', 'email', 'password',
+        'Id',
+        'username',
+        'password',
+        'UserType',
+        'UserId'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function getAuthIdentifierName()
+    {
+        return 'username';
+    }
+    public $timestamps = false; 
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    
+   
 }

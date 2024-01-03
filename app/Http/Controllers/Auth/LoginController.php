@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Hash;
+use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 
 class LoginController extends Controller
 {
@@ -14,20 +15,19 @@ class LoginController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Если пользователь аутентифицирован успешно, выполните необходимые действия
-            return redirect()->intended('/'); // Перенаправление на страницу после успешного входа
+            return redirect()->intended('/');
         }
 
-        // В случае неудачной аутентификации возвращаем пользователя на страницу логина с сообщением об ошибке
         return back()->withErrors([
-            'message' => $credentials,
-        ])->withInput($request->except('password')); 
+            'message' => 'Invalid credentials',
+        ])->withInput($request->except('password'));
+    }
+    public function showLoginForm(UserController $userController)
+    {
+        
+        return view('auth.login', compact('users'));
     }
 
-    public function showLoginForm()
-    {
-        return view('auth.login'); 
-    }
     public function logout(Request $request)
     {
         Auth::logout();
@@ -35,6 +35,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login'); // Перенаправление на страницу логина после выхода
+        return redirect('/login'); 
     }
 }

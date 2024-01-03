@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Lesson extends Model
 {
+    protected $table = 'lesson';
     protected $fillable = [
 
         'LessonDate',
