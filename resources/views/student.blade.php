@@ -1,23 +1,35 @@
 @section('main_content')
 <main>
 <section class="schedule">
-        <h2>School Schedule</h2>
+        <h2>Расписание</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Day</th>
-                    <th>Time</th>
+                    <th>№</th>
                     <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Classroom</th>
+
                 </tr>
             </thead>
             <tbody>
-                @foreach($todayLessons as $lesson)
-                    <tr>
-                        <td>{{ $lesson->day }}</td>
-                        <td>{{ $lesson->time }}</td>
-                        <td>{{ $lesson->subject }}</td>
-                    </tr>
-                @endforeach
+            @for($i = 1; $i <= 9; $i++)
+            @php
+                $lesson = $lessons->firstWhere('LessonNumber', $i);
+            @endphp
+            <tr>
+                <td>{{ $i }}</td>
+                @if($lesson)
+                    <td>{{ $lesson->teacher->subject->name }}</td>
+                    <td>{{ $lesson->teacher->name }}</td>
+                    <td>{{ $lesson->classroom }}</td>
+                @else
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                @endif
+            </tr>
+        @endfor
             </tbody>
         </table>
     </section>
@@ -26,7 +38,7 @@
             <!-- Возможно, список заданий с названием, сроком сдачи, описанием -->
         </section>
 
-        <section class="grades">
+<section class="grades">
     <h2>Grades</h2>
     <div id="carouselGrades" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -62,25 +74,25 @@
         </section>
 
 
-        <section class="new-task">
+    <section class="taskShow">
            
-            <h1>{{ $userType }}</h1>
-            <h2>Create New Task</h2>
-            <form action="/add_task" method="post">
-                <div>
-                    <label for="taskName">Task Name:</label>
-                    <input type="text" id="taskName" name="taskName" required>
-                </div>
-                <div>
-                    <label for="deadline">Deadline:</label>
-                    <input type="date" id="deadline" name="deadline" required>
-                </div>
-                <div>
-                    <textarea id="taskDescription" name="taskDescription" placeholder="Task Description" required></textarea>
-                </div>
-                <div>
-                    <input type="submit" value="Create Task">
-                </div>
-            </form>
-        </section>
-    </main>
+    
+    <h1>{{ $userType }}</h1>
+    <h2>Tasks</h2>
+    <div>
+        @foreach($tasks as $task)
+            <div>
+                <h3>{{ $task->title }}</h3>
+                <p>{{ $task->description }}</p>
+                <form action="{{ route('upload.solution') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="file">
+                    <input type="hidden" name="task_id" value="{{ $task->Id }}">
+                    <button type="submit">Загрузить решение</button>
+                </form>
+            </div>
+        @endforeach
+    </div>
+    </section>
+</main>
+@endsection

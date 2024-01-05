@@ -129,11 +129,15 @@ input[type="submit"]:hover {
 <body>
     
     <header>
-        <h1>School Diary</h1>
+        <h1>School Diary</h1> 
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit">Выйти из аккаунта</button>
+        </form>
         <nav>
             <ul>
-                <li><a href="index">Главная</a></li>
-                <li><a href="schedule">Расписание</a></li>
+                <li><a href="">Главная</a></li>
+                <li><a href="lessons">Расписание</a></li>
                 <li><a href="myClass">Мой класс</a></li>
                 <li><a href="homework">Домашние задания</a></li>
             </ul>

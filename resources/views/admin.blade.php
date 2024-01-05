@@ -1,65 +1,79 @@
 @section('main_content')
 <main>
-<section class="schedule">
-        <h2>School Schedule</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    <th>Time</th>
-                    <th>Subject</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($todayLessons as $lesson)
-                    <tr>
-                        <td>{{ $lesson->day }}</td>
-                        <td>{{ $lesson->time }}</td>
-                        <td>{{ $lesson->subject }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </section>
+
         <section class="news">
             <!-- Задания для выполнения -->
             <!-- Возможно, список заданий с названием, сроком сдачи, описанием -->
         </section>
 
-        <section class="grades">
-    <h2>Grades</h2>
-    <div id="carouselGrades" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="carousel-caption">
-                    <h3>Grade 1</h3>
-                    <h2>Math</h2>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="carousel-caption">
-                    <h3>Grade 2</h3>
-                    <h2>Rus Lang</h2>
-                </div>
-            </div>
-            
-            <div class="carousel-item">
-                <div class="carousel-caption">
-                    <h3>Grade 3</h3>
-                    <h2>Chemitry</h2>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselGrades" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselGrades" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+<section class="UserCreate">
+    <h2>Create New User</h2>
+<form action="{{ route('create-user') }}" method="POST">
+    @csrf
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" >
     </div>
-        </section>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" >
+    </div>
+    <div>
+        <label for="userType">User Type:</label>
+        <select id="userType" name="userType" onchange="showFields(this.value)">
+            <option value="admin">Admin</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+        </select>
+    </div>
+    <div id="adminFields" style="display: none;">
+        <label for="adminName">Admin Name:</label>
+        <input type="text" id="adminName" name="adminName">
+    </div>
+    <div id="studentFields" style="display: none;">
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" name="studentName" >
+
+        <label for="studentSurname">Student Surname:</label>
+        <input type="text" id="studentSurname" name="studentSurname" >
+
+        <label for="studentThirdname">Student Third Name:</label>
+        <input type="text" id="studentThirdname" name="studentThirdname" >
+
+        <label for="avgMark">Average Mark:</label>
+        <input type="number" step="0.01" id="avgMark" name="avgMark" >
+
+        <label for="classId">Class ID:</label>
+        <input type="number" id="classId" name="classId" >
+    </div>
+    <div id="teacherFields" style="display: none;">
+        <label for="teacherName">Teacher Name:</label>
+        <input type="text" id="teacherName" name="teacherName" >
+
+        <label for="teacherSurname">Teacher Surname:</label>
+        <input type="text" id="teacherSurname" name="teacherSurname" >
+
+        <label for="teacherThirdname">Teacher Third Name:</label>
+        <input type="text" id="teacherThirdname" name="teacherThirdname" >
+
+        <label for="subjectId">Subject ID:</label>
+        <input type="number" id="subjectId" name="subjectId" >
+    </div>
+    <div>
+    <button type="submit">Craete User</button>
+    </div>
+</form>
+
+<script>
+    function showFields(userType) {
+        document.getElementById('adminFields').style.display = userType === 'admin' ? 'block' : 'none';
+        document.getElementById('studentFields').style.display = userType === 'student' ? 'block' : 'none';
+        document.getElementById('teacherFields').style.display = userType === 'teacher' ? 'block' : 'none';
+    }
+</script>
+</section>
+
+
 
 
         <section class="new-task">

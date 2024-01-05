@@ -17,9 +17,9 @@ class AdminModel extends Model
     public $timestamps = false; // Если у вас нет полей 'created_at' и 'updated_at', установите значение false
 
     public static function createAdmin($data)
-    {
-        return self::create($data)->id;
-    }
+{
+    return self::create($data);
+}
 
     public static function updateAdmin($adminId, $data)
     {
@@ -43,4 +43,4 @@ class AdminModel extends Model
     }
 }
 
-}
+

@@ -3,15 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\AdminModel;
-use App\TeacherModel;
-use App\StudentModel;
+use App\Teacher;
+use App\Student;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // Создание нового студента
+    
+    public function createUser(Request $request)
+    {
+    $userType = $request->input('userType');
+    switch ($userType) {
+        case 'student':
+            return $this->createNewUserStudent($request);
+            break;
+        case 'teacher':
+            return $this->createNewUserTeacher($request);
+            break;
+        case 'admin':
+            return $this->createNewUserAdmin($request);
+            break;
+    }
+    }
+
     public function createNewUserStudent(Request $request)
     {
         $user = new User();
@@ -20,19 +36,18 @@ class UserController extends Controller
         $user->UserType = 'student';
 
         $data = [
-            'name' => $request->input('name'),
-            'Surname' => $request->input('surname'),
-            'Thirdname' => $request->input('thirdname'),
-            'AvgMark' => $request->input('avgmark'),
-            'ClassId' => $request->input('classid'),
-            'Grade' => $request->input('grade')
+            'name' => $request->input('studentName'),
+            'Surname' => $request->input('studentSurname'),
+            'Thirdname' => $request->input('studentThirdname'),
+            'AvgMark' => $request->input('avgMark'),
+            'ClassId' => $request->input('classId'),
         ];
 
         $stud = Student::createStudent($data);
 
         $user->UserId = $stud->id;
         $user->save();
-
+        
        
     }
 
@@ -70,7 +85,7 @@ class UserController extends Controller
             'name' => $request->input('name')
         ];
 
-        $newAdmin = Admin::createAdmin($data);
+        $newAdmin = AdminModel::createAdmin($data);
 
         $user->UserId = $newAdmin->id;
         $user->save();
@@ -92,9 +107,9 @@ class UserController extends Controller
         if ($user->UserType == 'student') {
             Student::deleteStudent($user->UserId);
         } elseif ($user->UserType == 'teacher') {
-            Teacher::deleteTeacher($user->UserId);
+            TeacherModel::deleteTeacher($user->UserId);
         } elseif ($user->UserType == 'admin') {
-            Admin::deleteAdmin($user->UserId);
+            AdminModel::deleteAdmin($user->UserId);
         }
         $user->delete();
 

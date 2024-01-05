@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use App\ClassTable;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,22 +15,21 @@ class Student extends Model
         'Thirdname',
         'AvgMark',
         'ClassId',
-        'Grade'
     ];
     public function class()
     {
         return $this->belongsTo(ClassTable::class, 'ClassId');
     }
-    public $timestamps = true; // Поле для автоматической метки времени создания и обновления записи
+    public $timestamps = false; // Поле для автоматической метки времени создания и обновления записи
     public static function createNewStudent($data)
     {   
         return self::create($data);
     }
+
     public static function createStudent($data)
-{
-    $student = self::create($data);
-    return $student->id;
-}
+    {
+        return self::create($data);
+    }
     public static function updateStudent($studentId, $data)
     {
         $student = self::find($studentId);

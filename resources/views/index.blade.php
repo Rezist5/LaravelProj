@@ -1,11 +1,12 @@
 @extends('layout')
 
 @section('main_content')
-    @if($userType === 'Student')
+    @if($userType == 'student')
+        ALOOOOOOOOOOOOOOOOOOOO
         @include('student')
-    @elseif($userType === 'Teacher')
+    @elseif($userType == 'Teacher')
         @include('teacher')
-    @elseif($userType === 'Admin')
+    @elseif($userType == 'Admin')
         @include('admin')
     @endif
 @endsection
