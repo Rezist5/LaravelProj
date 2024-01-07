@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AdminModel extends Model
 {
-    protected $table = 'admin'; // Указываем имя таблицы, если оно отличается от стандартного формата Laravel
+    protected $table = 'admin'; 
 
     protected $fillable = [
         'username',
@@ -14,7 +14,7 @@ class AdminModel extends Model
         'email'
     ];
 
-    public $timestamps = false; // Если у вас нет полей 'created_at' и 'updated_at', установите значение false
+    public $timestamps = false; 
 
     public static function createAdmin($data)
 {

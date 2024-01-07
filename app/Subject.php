@@ -8,7 +8,7 @@ use App\Teacher;
 class Subject extends Model
 {
    
-    protected $table = 'subjects';
+    protected $table = 'Subject';
     protected $primaryKey = 'id';
     public $incrementing = true;
     public $timestamps = true;
@@ -16,8 +16,9 @@ class Subject extends Model
     protected $fillable = [
         'name',
     ];
-    public function lessons() {
-        return $this->hasMany(Teacher::class, 'SubjectId');
+    public function lessons()
+    {
+        return $this->hasMany(Teacher::class, 'SubjectID');
     }
     public function getName()
     {

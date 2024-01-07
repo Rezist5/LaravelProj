@@ -47,7 +47,7 @@ class UserController extends Controller
 
         $user->UserId = $stud->id;
         $user->save();
-        
+        return redirect()->back();
        
     }
 
@@ -60,17 +60,17 @@ class UserController extends Controller
         $user->UserType = 'teacher';
 
         $data = [
-            'name' => $request->input('name'),
-            'Surname' => $request->input('surname'),
-            'Thirdname' => $request->input('thirdname'),
-            'SubjectID' => $request->input('subjectid')
+            'name' => $request->input('teacherName'),
+            'Surname' => $request->input('teacherSurname'),
+            'Thirdname' => $request->input('teacherThirdname'),
+            'SubjectID' => $request->input('subjectId')
         ];
 
         $newTeacher = Teacher::createTeacher($data);
 
         $user->UserId = $newTeacher->id;
         $user->save();
-
+        return redirect()->back();
     }
 
     // Создание нового админа
@@ -82,14 +82,14 @@ class UserController extends Controller
         $user->UserType = 'admin';
 
         $data = [
-            'name' => $request->input('name')
+            'name' => $request->input('adminName')
         ];
 
         $newAdmin = AdminModel::createAdmin($data);
 
         $user->UserId = $newAdmin->id;
         $user->save();
-
+        return redirect()->back();
         
     }
 

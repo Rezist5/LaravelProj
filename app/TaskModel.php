@@ -11,16 +11,20 @@ class TaskModel extends Model
         'lessonId',
         'subjectId',
         'classId',
-        'taskFilePath',
-        'filePath',
+        'deadline',
+        'TaskfilePath',
         'verified',
         'downloaded'
     ];
-
+    public $timestamps = false; 
     protected $attributes = [
         'verified' => false,
         'downloaded' => false,
     ];
+    public function marks()
+    {
+        return $this->hasMany(Mark::class, 'TaskId');
+    }
     public function lesson()
     {
         return $this->belongsTo(Lesson::class, 'lessonID');

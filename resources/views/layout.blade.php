@@ -136,7 +136,7 @@ input[type="submit"]:hover {
         </form>
         <nav>
             <ul>
-                <li><a href="">Главная</a></li>
+                <li><a href="/">Главная</a></li>
                 <li><a href="lessons">Расписание</a></li>
                 <li><a href="myClass">Мой класс</a></li>
                 <li><a href="homework">Домашние задания</a></li>

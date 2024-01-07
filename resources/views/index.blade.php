@@ -2,11 +2,10 @@
 
 @section('main_content')
     @if($userType == 'student')
-        ALOOOOOOOOOOOOOOOOOOOO
         @include('student')
-    @elseif($userType == 'Teacher')
+    @elseif($userType == 'teacher')
         @include('teacher')
-    @elseif($userType == 'Admin')
+    @elseif($userType == 'admin')
         @include('admin')
     @endif
 @endsection

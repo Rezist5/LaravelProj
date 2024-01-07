@@ -15,17 +15,16 @@ class Lesson extends Model
         'TeacherId',
         'classroom'
     ];
+    public $timestamps = false; 
 
-    public function class()
+       public function class()
     {
         return $this->belongsTo(ClassTable::class, 'classId');
     }
-    public function getDayOfWeekAttribute()
+    public function task()
     {
-        $date = Carbon::parse($this->LessonDate);
-        return $date->dayOfWeekIso;
+        return $this->hasMany(TaskModel::class, 'lessonId');
     }
-
     public function teacher()
     {
         return $this->belongsTo(Teacher::class, 'TeacherId');

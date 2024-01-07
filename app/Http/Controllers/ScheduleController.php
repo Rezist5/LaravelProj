@@ -7,26 +7,50 @@ use Illuminate\Support\Facades\Auth;
 use App\Lesson;
 use App\Student;
 use App\Teacher;
+use App\Subject;
 
 
 class ScheduleController extends Controller
 {
     
-    public function getLessonsByDate($date)
+    public function getLessonsByDate(Request $request)
     {
-        if (Auth::check()) {
-            $currentUser = Auth::user();
-    
-            $lessons = Lesson::where('classId', $currentUser->classId)
-                ->where('LessonDate', $date)
-                ->orderBy('LessonNumber')
-                ->get();
-    
-            return view('lessons', ['lessons' => $lessons, 'selectedDate' => $date]);
-        } else {
-            return redirect('/login');
+        $currentUser = Auth::user();
+        $lessons = null;
+        
+        if($request)
+        {
+            $date = $request->input('lesson_date');
         }
+        else
+        {
+            $date = now()->toDateString();
+        }
+        
+        
+            if ($currentUser->UserType === 'student') {
+                $student = Student::where('Id', $currentUser->UserId)->first();
+                if ($student) {
+                    $lessons = Lesson::where('classId', $student->ClassId)
+                        ->where('LessonDate', $date)
+                        ->orderBy('LessonNumber')  
+                        ->get();
+                        return view('studentLessons', ['lessons' => $lessons, 'selectedDate' => $date]);
+                }
+            } elseif ($currentUser->UserType === 'teacher') {
+                $teacher = Teacher::where('Id', $currentUser->UserId)->first();
+                if ($teacher) {
+                    $lessons = Lesson::where('TeacherId', $teacher->Id)
+                        ->where('LessonDate', $date)
+                        ->orderBy('LessonNumber')
+                        ->with('task')
+                        ->get();
+                        return view('teacherLessons', ['lessons' => $lessons, 'selectedDate' => $date]);
+                }
+            }     
+        return redirect()->back();
     }
+
     public function getLessonsForToday()
 {
     if (Auth::check()) {
@@ -46,14 +70,14 @@ class ScheduleController extends Controller
         }
         else if($currentUser->UserType == "teacher")
         {
-            $teacher = Teacher::where('userId', $currentUser->id)->first();
+
+            $teacher = Teacher::where('Id', $currentUser->UserId)->first();
             $today = now()->toDateString(); 
     
-            $lessons = Lesson::where('TeacherId', $teacher->id)
+            $lessons = Lesson::where('TeacherId', $currentUser->UserId)
                 ->where('LessonDate', $today)
                 ->orderBy('LessonNumber')
                 ->get();
-    
             return $lessons;
         }
         

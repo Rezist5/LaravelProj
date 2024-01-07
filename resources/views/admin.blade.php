@@ -1,6 +1,30 @@
 @section('main_content')
 <main>
-
+    <section class="createLessons">
+    <form action="{{ route('create.lessons') }}" method="POST">
+    @csrf
+    <input type="date" name="lesson_date" required>
+    <table>
+        <thead>
+            <tr>
+                <th>Teacher ID</th>
+                <th>Class ID</th>
+                <th>Classroom</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for($i = 1; $i <= 9; $i++)
+            <tr>
+                <td><input type="text" name="teacher_id_{{ $i }}" required></td>
+                <td><input type="text" name="class_id_{{ $i }}" required></td>
+                <td><input type="text" name="classroom_{{ $i }}" required></td>
+            </tr>
+            @endfor
+        </tbody>
+    </table>
+    <button type="submit">Создать</button>
+</form>
+    </section>
         <section class="news">
             <!-- Задания для выполнения -->
             <!-- Возможно, список заданий с названием, сроком сдачи, описанием -->
@@ -72,29 +96,10 @@
     }
 </script>
 </section>
-
-
-
-
-        <section class="new-task">
+        <section class="new-news">
            
             <h1>{{ $userType }}</h1>
-            <h2>Create New Task</h2>
-            <form action="/add_task" method="post">
-                <div>
-                    <label for="taskName">Task Name:</label>
-                    <input type="text" id="taskName" name="taskName" required>
-                </div>
-                <div>
-                    <label for="deadline">Deadline:</label>
-                    <input type="date" id="deadline" name="deadline" required>
-                </div>
-                <div>
-                    <textarea id="taskDescription" name="taskDescription" placeholder="Task Description" required></textarea>
-                </div>
-                <div>
-                    <input type="submit" value="Create Task">
-                </div>
+            <h2>Create New News</h2>
             </form>
         </section>
     </main>

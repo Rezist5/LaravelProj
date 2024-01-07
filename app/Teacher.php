@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use app\Subject;
+use App\Subject;
 
 class Teacher extends Model
 {
@@ -27,7 +27,7 @@ class Teacher extends Model
     }
     public function subject()
     {
-        return $this->belongsTo(Subject::class, 'SubjectID');
+        return $this->belongsTo(Subject::class, 'SubjectID', 'id');
     }
     public static function updateTeacher($teacherId, $data)
     {

@@ -78,17 +78,22 @@
            
     
     <h1>{{ $userType }}</h1>
-    <h2>Tasks</h2>
+    <h2><a href="/StudentTasks">Tasks</a></h2>
     <div>
         @foreach($tasks as $task)
             <div>
                 <h3>{{ $task->title }}</h3>
-                <p>{{ $task->description }}</p>
-                <form action="{{ route('upload.solution') }}" method="POST" enctype="multipart/form-data">
+                <p>{{ $task->deadline }}</p>
+                <form action="{{ route('solution.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="file" name="file">
-                    <input type="hidden" name="task_id" value="{{ $task->Id }}">
+                    <input type="hidden" name="taskId" value="{{ $task->Id }}">
                     <button type="submit">Загрузить решение</button>
+                </form>
+                <form action="{{ route('task.download') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="taskId" value="{{ $task->Id }}">
+                    <button type="submit">Скачать задание</button>
                 </form>
             </div>
         @endforeach
