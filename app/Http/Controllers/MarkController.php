@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Mark;
+use App\TaskModel;
+use App\SolutionTaskModel;
 
 class MarkController extends Controller
 {
@@ -11,18 +13,20 @@ class MarkController extends Controller
     {
         $lessonId = $request->lessonId;
         $studentId = $request->studentId;
-
-        $existingMark = Mark::where('LessonId', $lessonId)
+        $task = TaskModel::where('LessonID', $lessonId)->first();
+        $existingMark = Mark::where('TaskId', $task->Id)
                             ->where('StudentId', $studentId)
                             ->first();
-
+        $SolTask = SolutionTaskModel::where('TaskId', $task->Id);
         if ($existingMark) {
-
+            
             return redirect()->back()->withErrors([
                 'message' => 'Оценка за это задание уже была поставлена.',
             ]);
         }
-        $task = TaskModel::->where('lessonId', $lessonId)->first();
+        
+        $SolTask->verified = true;
+        $SolTask->save();
         $mark = new Mark();
         $mark->MarkNumber = $request->mark;
         $mark->MarkDate = now()->toDateString();

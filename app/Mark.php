@@ -12,7 +12,7 @@ class Mark extends Model
         'TaskId',
         'StudentId',
     ];
-
+    public $timestamps = false; 
     public function task()
     {
         return $this->belongsTo(Task::class, 'TaskId');

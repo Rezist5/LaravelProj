@@ -58,13 +58,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <!-- В этом цикле выведите учеников и кнопки для скачивания файла и оценки -->
+                                            @php
+                                                $students = \App\Student::where('classId', $lesson->classId)->get();
+                                            @endphp
                                             @foreach($students as $student)
                                             <tr>
                                                 <td>{{ $student->name }} {{ $student->Surname }}</td>
                                                 <td>
-                                                    <form action="{{ route('task.download', ['userId' => $student->id) }}" method="GET">
-                                                        @csrf
+                                                    <form action="{{ route('solution.download', ['StudentId' => $student->id]) }}" method="GET">
+                                                        
                                                         <input type="hidden" name="lessonId" value="{{ $lesson->id }}">
                                                         <input type="submit" value="Download Solution">
                                                     </form>

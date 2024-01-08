@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\TaskModel;
 use App\Teacher;
+use App\Lesson;
+use App\Student;
+use App\SolutionTaskModel;
 
 class TaskController extends Controller
 {
@@ -60,17 +63,8 @@ class TaskController extends Controller
         $task = TaskModel::find($request->taskId);
         $filePath = $task->TaskfilePath;
         
-        // Получаем путь к файлу в хранилище
         $file = storage_path('app/' .$filePath);
-    
-        // Определяем имя для загружаемого файла
-        $fileName = basename($file);
-    
-        // Определяем путь для загрузки в системную папку download
-        $destinationPath = 'D:\OSPanel\LaraProj\LaravelProj\storage\app\public\download/' . $fileName;
-        copy($file, $destinationPath);
-        return redirect()->back();
-        // Копируем файл в системную папку download
+        return response()->download($file);
     }
         // Действие для загрузки решений студентами
     public function uploadSolutionFile(Request $request)
@@ -86,7 +80,7 @@ class TaskController extends Controller
                 $task->TaskId = $taskId;
                 $task->SolutionfilePath = $filePath; 
                 $task->StudentId = Auth::user()->UserId; 
-                $task->download = true; 
+                $task->downloaded = true; 
                 $task->save();
 
                 return redirect()->back();
@@ -96,24 +90,23 @@ class TaskController extends Controller
         }
         public function downloadSolutionFile(Request $request)
         {
-            $userId = $request->userId;
+            $studId = $request->StudentId;
             $lessonId = $request->lessonId;
-            $task = TaskModel::->where('lessonId', $lessonId)->first();
-            $SolTask = SolutionTaskModel::where('userId', $userId)
-                ->where('TaskId', $task->Id)
-                ->first();
-        
-            if ($task) {
-                $filePath = $SolTask->SolutionfilePath;
-                $file = storage_path('app/' . $filePath);
-                $fileName = basename($file);
-                $destinationPath = 'D:\OSPanel\LaraProj\LaravelProj\storage\app\public\download/' . $fileName;
-                copy($file, $destinationPath);
-        
-                return redirect()->back();
-            } else {
-                
+            $task = TaskModel::where('lessonId', $lessonId)->first();
+            $SolTask = SolutionTaskModel::where('StudentId', $studId)
+            ->where('TaskId', $task->Id)
+            ->first();        
+            if (!$SolTask) {
+                return redirect()->back()->withErrors(['message' => 'Solution file not found.']);
             }
+            $filePath = $SolTask->SolutionFilePath;
+            $file = storage_path('app/' . $filePath);
+        
+            if (!file_exists($file)) {
+                return redirect()->back()->withErrors(['message' => 'File not found.']);
+            }
+        
+            return response()->download($file);
         }
     
 }

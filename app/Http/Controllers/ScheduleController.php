@@ -45,6 +45,7 @@ class ScheduleController extends Controller
                         ->orderBy('LessonNumber')
                         ->with('task')
                         ->get();
+                    
                         return view('teacherLessons', ['lessons' => $lessons, 'selectedDate' => $date]);
                 }
             }     
@@ -57,8 +58,8 @@ class ScheduleController extends Controller
         $currentUser = Auth::user();
         if($currentUser->UserType == "student")
         {
-            $student = Student::where('Id', $currentUser->UserId)->first();
-            $classId = $student->classId;
+            $student = Student::find($currentUser->UserId);
+            $classId = $student->ClassId;
             $today = now()->toDateString(); 
             
             $lessons = Lesson::where('classId', $classId)

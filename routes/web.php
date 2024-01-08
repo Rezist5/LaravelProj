@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MarkController;
 
 Route::get('/', [RouteController::class, 'index'])->middleware('auth');
 Route::get('/lessons', [RouteController::class, 'lessons'])->middleware('auth');
@@ -29,5 +31,8 @@ Route::post('/create_lessons', 'AdminController@createLessons')->name('create.le
 Route::post('/upload-solution',  [TaskController::class, 'uploadSolutionFile'])->name('solution.upload');
 Route::post('/upload-task/{lessonId}',  [TaskController::class, 'uploadTaskFile'])->name('task.upload');
 
-Route::post('/download-task/{StudentId}', [TaskController::class, 'downloadTaskFile'])->name('task.download');
+Route::post('/download-task', [TaskController::class, 'downloadTaskFile'])->name('task.download');
+Route::get('/download-solution/{StudentId}', [TaskController::class, 'downloadSolutionFile'])->name('solution.download');
+Route::post('/mark/store', [MarkController::class, 'store'])->name('mark.store');
+
 
