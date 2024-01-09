@@ -8,20 +8,25 @@ class CreateTaskModelsTable extends Migration
 {   
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('Task', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->unsignedBigInteger('SubjectID');
-            $table->unsignedBigInteger('ClassId');
-            $table->foreign('SubjectID')->references('id')->on('subjects');
-            $table->foreign('ClassId')->references('id')->on('class_tables');
-            $table->timestamps();
+            $table->foreignId('lessonId');
+            $table->foreignId('subjectId');
+            $table->foreignId('classId');
+            $table->dateTime('deadline');
+            $table->string('TaskfilePath');
+            $table->boolean('verified')->default(false);
+            $table->boolean('downloaded')->default(false);
+            
+            
+            $table->foreign('lessonId')->references('id')->on('lesson');
+            $table->foreign('subjectId')->references('id')->on('Subject');
+            $table->foreign('classId')->references('id')->on('ClassTable');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('Task');
     }
 }

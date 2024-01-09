@@ -26,8 +26,7 @@ class ScheduleController extends Controller
         {
             $date = now()->toDateString();
         }
-        
-        
+
             if ($currentUser->UserType === 'student') {
                 $student = Student::where('Id', $currentUser->UserId)->first();
                 if ($student) {

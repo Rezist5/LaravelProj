@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAdminModelsTable extends Migration
+class CreateClassTableTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateAdminModelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('Admin', function (Blueprint $table) {
+        Schema::create('ClassTable', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('ClassName', 50);
+            $table->string('grade', 10);
         });
+        
     }
 
     /**
@@ -26,6 +28,6 @@ class CreateAdminModelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('Admin');
+        Schema::dropIfExists('ClassTable');
     }
 }

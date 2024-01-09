@@ -13,12 +13,12 @@ class CreateLessonModelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('lessons', function (Blueprint $table) {
+        Schema::create('lesson', function (Blueprint $table) {
             $table->id();
             $table->date('LessonDate');
             $table->integer('LessonNumber');
-            $table->unsignedBigInteger('classId');
-            $table->unsignedBigInteger('TeacherId');
+            $table->foreignId('classId');
+            $table->foreignId('TeacherId');
             $table->foreign('classId')->references('id')->on('ClassTable');
             $table->foreign('TeacherId')->references('id')->on('teacher');
             $table->integer('classroom');
@@ -33,6 +33,6 @@ class CreateLessonModelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lessons');
+        Schema::dropIfExists('lesson');
     }
 }

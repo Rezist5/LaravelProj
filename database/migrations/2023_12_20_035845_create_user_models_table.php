@@ -12,7 +12,7 @@ class CreateUserModelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('User', function (Blueprint $table) {
             $table->id();
             $table->string('username', 100);
             $table->string('password', 100);

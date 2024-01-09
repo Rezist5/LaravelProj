@@ -6,39 +6,29 @@
             <!-- Возможно, список заданий с названием, сроком сдачи, описанием -->
         </section>
 
-        <section class="grades">
+        <section class="notVerifiedTasks">
     <h2>Grades</h2>
-    <div id="carouselGrades" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="carousel-caption">
-                    <h3>Grade 1</h3>
-                    <h2>Math</h2>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="carousel-caption">
-                    <h3>Grade 2</h3>
-                    <h2>Rus Lang</h2>
-                </div>
-            </div>
-            
-            <div class="carousel-item">
-                <div class="carousel-caption">
-                    <h3>Grade 3</h3>
-                    <h2>Chemitry</h2>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselGrades" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselGrades" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
+    @foreach($Tasks as $task)
+            <tr>
+            <td>{{ $task->student->name }} {{ $task->student->name }}</td>
+                <td>
+                <form action="{{ route('solution.download', ['StudentId' => $task->student->id]) }}" method="GET">                                       
+                    <input type="hidden" name="lessonId" value="{{ $task->task->id }}">
+                    <input type="submit" value="Download Solution">
+                </form>
+                <form action="{{ route('mark.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="lessonId" value="{{ $task->task->id }}">
+                    <input type="hidden" name="studentId" value="{{ $task->student->id }}">
+                    <input type="number" name="mark" placeholder="Оценка" min="1" max="10">
+                    <button type="submit">Оценить</button>
+                </form>
+                @if($errors->any())
+                    <div style="color: red;">{!! $errors->first('message') !!}</div>
+                @endif
+                </td>
+            </tr>
+        @endforeach
         </section>
 
 

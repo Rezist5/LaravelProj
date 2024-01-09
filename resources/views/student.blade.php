@@ -33,10 +33,7 @@
             </tbody>
         </table>
     </section>
-        <section class="news">
-            <!-- Задания для выполнения -->
-            <!-- Возможно, список заданий с названием, сроком сдачи, описанием -->
-        </section>
+
 
 <section class="grades">
     <h2>Grades</h2>

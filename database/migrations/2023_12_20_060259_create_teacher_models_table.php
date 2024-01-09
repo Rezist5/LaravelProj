@@ -18,9 +18,8 @@ class CreateTeacherModelsTable extends Migration
             $table->string('name', 50);
             $table->string('Surname', 50);
             $table->string('Thirdname', 50);
-            $table->unsignedBigInteger('SubjectID');
+            $table->foreignId('SubjectID');
             $table->foreign('SubjectID')->references('id')->on('Subject');
-            $table->timestamps();
         });
     }
 

@@ -23,6 +23,11 @@ class RouteController extends Controller
             $top3Tasks = $taskController->getTop3Tasks($stud->ClassId);
             return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'tasks' => $top3Tasks ]);
         }
+        else if($userType == 'teacher')
+        {
+            $Tasks = $taskController->getUnverifiedTasks();
+            return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'tasks' => $Tasks ]);
+        }
         return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons]);
     }
     public function StudentTasks()

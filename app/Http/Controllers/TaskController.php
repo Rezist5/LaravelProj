@@ -26,6 +26,19 @@ class TaskController extends Controller
 
         return $top3Tasks;
     }
+    public function getUnverifiedTasks()
+    {
+        $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
+        $Tasks = TaskModel::where('subjectId', $teacher->subjectId)->get();
+        $taskIds = $tasks->pluck('Id');
+        $SolTasks = SolutionTaskModel::whereIn('TaskId', $taskIds)
+                            ->where('verified', False)
+                            ->orderBy('lessonId', 'desc')
+                            ->get();
+            
+
+        return $SolTasks;
+    }
     public function getAllTasks($classId)
     {
         $Tasks = TaskModel::where('classId', $classId)->orderBy('deadline', 'desc')

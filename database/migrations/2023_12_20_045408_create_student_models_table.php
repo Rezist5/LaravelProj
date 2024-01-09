@@ -14,23 +14,17 @@ class CreateStudentModelsTable extends Migration
     public function up()
     {
         Schema::create('Student', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('name');
             $table->string('Surname');
             $table->string('Thirdname');
             $table->decimal('AvgMark', 5, 2);
-            $table->bigInteger('ClassId')->unsigned();
+            $table->foreignId('ClassId');
             $table->integer('Grade');
-            
-            $table->timestamps();
+            $table->foreign('ClassId')->references('id')->on('ClassTable');
 
-            // Foreign key constraint for ClassId column
-            // $table->foreign('ClassId')->references('id')->on('classes')->onDelete('CASCADE');
-        });
-        Schema::table('Student', function(Blueprint $table)
-        {
-            $table->foreign('ClassId')->references('id')->on('ClassTable')->onDelete('CASCADE');
+            
+            //$table->foreign('ClassId')->references('id')->on('classes')->onDelete('CASCADE');
         });
     }
 

@@ -34,6 +34,10 @@ class Student extends Model
     {
         return $this->hasMany(Mark::class, 'StudentId');
     }
+    public function marks()
+    {
+        return $this->hasMany(SolutionTaskModel::class, 'StudentId');
+    }
     public static function updateStudent($studentId, $data)
     {
         $student = self::find($studentId);

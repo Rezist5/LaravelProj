@@ -25,6 +25,10 @@ class TaskModel extends Model
     {
         return $this->hasMany(Mark::class, 'TaskId');
     }
+    public function solution()
+    {
+        return $this->hasMany(SolutionTaskModel::class, 'TaskId');
+    }
     public function lesson()
     {
         return $this->belongsTo(Lesson::class, 'lessonID');

@@ -36,4 +36,22 @@ class MarkController extends Controller
 
         return redirect()->back()->with('success', 'Оценка успешно добавлена.');
     }
+
+    public function getMarkForSubject(Request $request)
+    {
+        $lessonId = $request->lessonId;
+        $subjectId = $request->subjectId;
+        
+        $studentId = Auth::user()->UserId;
+        $tasks = TaskModel::where('LessonID', $lessonId)
+                  ->where('SubjectId', $subject)
+                  ->get();
+
+        $taskIds = $tasks->pluck('Id');         
+        $Marks = Mark::whereIn('TaskId', $taskIds)
+                     ->where('StudentId', $studentId)
+                     ->get();
+        dd($Marks);
+        return redirect()->back()->with('success', 'Оценка успешно добавлена.');
+    }
 }

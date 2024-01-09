@@ -19,4 +19,12 @@ class SolutionTaskModel extends Model
         'verified' => false,
         'downloaded' => false,
     ];
+    public function task()
+    {
+        return $this->belongsTo(Task::class, 'TaskId');
+    }
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'StudentId');
+    }
 }

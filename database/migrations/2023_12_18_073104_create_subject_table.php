@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClassTableTable extends Migration
+class CreateSubjectTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateClassTableTable extends Migration
      */
     public function up()
     {
-        Schema::create('ClassTable', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-            $table->bigInteger('id')->unsigned();
-            $table->string('ClassName', 50);
-            $table->string('grade', 10);
+        Schema::create('Subject', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 50);
             $table->timestamps();
         });
-        
     }
 
     /**
@@ -30,6 +27,6 @@ class CreateClassTableTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ClassTable');
+        Schema::dropIfExists('subjects');
     }
 }
