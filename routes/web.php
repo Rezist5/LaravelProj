@@ -10,10 +10,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MarkController;
+use App\Http\Controllers\NewsController;
 
 Route::get('/', [RouteController::class, 'index'])->middleware('auth');
 Route::get('/lessons', [RouteController::class, 'lessons'])->middleware('auth');
 Route::get('/StudentTasks', [RouteController::class, 'StudentTasks'])->middleware('auth');
+Route::get('/TeacherTasks', [RouteController::class, 'TeacherTasks'])->middleware('auth');
+Route::get('/AdminClasses', [RouteController::class, 'AdminClasses'])->middleware('auth');
+Route::get('/StudentMarks', [RouteController::class, 'StudentMarks'])->middleware('auth');
 
 
 Route::get('/lessons/{date}', [ScheduleController::class, 'getLessonsByDate'])->name('lessons.by.date');
@@ -34,5 +38,10 @@ Route::post('/upload-task/{lessonId}',  [TaskController::class, 'uploadTaskFile'
 Route::post('/download-task', [TaskController::class, 'downloadTaskFile'])->name('task.download');
 Route::get('/download-solution/{StudentId}', [TaskController::class, 'downloadSolutionFile'])->name('solution.download');
 Route::post('/mark/store', [MarkController::class, 'store'])->name('mark.store');
+Route::post('/createNews', [AdminController::class, 'createNews'])->name('createNews');
+Route::post('/createSubject', [AdminController::class, 'createSubjects'])->name('subjects.create');
+Route::post('/createClass', [AdminController::class, 'createClass'])->name('class.create');
+
+
 
 

@@ -25,11 +25,38 @@
     <button type="submit">Создать</button>
 </form>
     </section>
-        <section class="news">
-            <!-- Задания для выполнения -->
-            <!-- Возможно, список заданий с названием, сроком сдачи, описанием -->
-        </section>
-
+<section class="CreateNews">
+<h2>Create New News</h2>
+    <form action="{{ route('createNews') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <label for="title">Заголовок:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="description">Описание:</label>
+        <textarea id="description" name="description" required></textarea>
+        <label for="picture">Изображение:</label>
+        <input type="file" id="picture" name="picture" accept="image/*" required>
+        <button type="submit">Создать новость</button>
+    </form>
+</section>
+<section class="SubjectCreate">
+<h2>Create New Subject</h2>
+<form method="POST" action="{{ route('subjects.create') }}">
+    @csrf
+    <label for="name">Название предмета:</label>
+    <input type="text" id="name" name="name">
+    <button type="submit">Создать предмет</button>
+</form>
+</section>
+<section class="ClassCreate">
+<h2>Create New Class</h2>
+<form method="POST" action="{{ route('class.create') }}">
+    @csrf
+    <label for="name">Название класса:</label>
+    <input type="text" id="name" name="name">
+    <input type="number" step="1" id="grade" name="grade" >
+    <button type="submit">Создать класс</button>
+</form>
+</section>
 <section class="UserCreate">
     <h2>Create New User</h2>
 <form action="{{ route('create-user') }}" method="POST">
@@ -96,11 +123,5 @@
     }
 </script>
 </section>
-        <section class="new-news">
-           
-            <h1>{{ $userType }}</h1>
-            <h2>Create New News</h2>
-            </form>
-        </section>
     </main>
 @endsection

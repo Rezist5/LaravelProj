@@ -1,4 +1,5 @@
 @section('main_content')
+
 <main>
 <section class="schedule">
         <h2>Расписание</h2>
@@ -34,31 +35,58 @@
         </table>
     </section>
 
-
+<section class="newShow">
+    <h2>News</h2>
+    <div class="news-slider">
+        @foreach($newsList as $news)
+            <div class="news-item">
+                <h2>{{ $news->title }}</h2>
+                <p>{{ $news->description }}</p>
+                <p>{{ $news->date }}</p>
+                <img src="storage\app\news_images\1.jpg" alt="{{ $news->Title }}">
+            </div>
+        @endforeach
+    </div>
+</section>
 <section class="grades">
     <h2>Grades</h2>
     <div id="carouselGrades" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="carousel-caption">
-                    <h3>Grade 1</h3>
-                    <h2>Math</h2>
+            <!-- Здесь будут ваши оценки -->
+            @foreach($marks as $mark)
+            @if($mark->MarkNumber > 6)
+                <div class="carousel-item ">
+                    <div class="carousel-caption">
+                        <div class="grade-block grade-green">
+                            <h3>{{$mark->subject->name}}</h3>
+                            <h4>{{$mark->MarkNumber}}</h4>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="carousel-item">
-                <div class="carousel-caption">
-                    <h3>Grade 2</h3>
-                    <h2>Rus Lang</h2>
+            @endif
+            @if($mark->MarkNumber < 7 && $mark->MarkNumber > 4)
+                <div class="carousel-item">
+                    <div class="carousel-caption">
+                        <div class="grade-block grade-orange">
+                            <h3>{{$mark->subject->name}}</h3>
+                            <h4>{{$mark->MarkNumber}}</h4>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endif
+            @if($mark->MarkNumber < 5)
+                <div class="carousel-item">
+                    <div class="carousel-caption">
+                        <div class="grade-block grade-red">
+                            <h3>{{$mark->subject->name}}</h3>
+                            <h4>{{$mark->MarkNumber}}</h4>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            @endforeach
             
-            <div class="carousel-item">
-                <div class="carousel-caption">
-                    <h3>Grade 3</h3>
-                    <h2>Chemitry</h2>
-                </div>
             </div>
-        </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselGrades" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
@@ -68,12 +96,9 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
-        </section>
-
+</section>
 
     <section class="taskShow">
-           
-    
     <h1>{{ $userType }}</h1>
     <h2><a href="/StudentTasks">Tasks</a></h2>
     <div>
@@ -84,12 +109,12 @@
                 <form action="{{ route('solution.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="file" name="file">
-                    <input type="hidden" name="taskId" value="{{ $task->Id }}">
+                    <input type="hidden" name="taskId" value="{{ $task->id }}">
                     <button type="submit">Загрузить решение</button>
                 </form>
                 <form action="{{ route('task.download') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" name="taskId" value="{{ $task->Id }}">
+                    <input type="hidden" name="taskId" value="{{ $task->id }}">
                     <button type="submit">Скачать задание</button>
                 </form>
             </div>

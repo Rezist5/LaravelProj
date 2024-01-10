@@ -1,5 +1,5 @@
 @extends('layout')
-
+@include('header')
 @section('main_content')
     @if($userType == 'student')
         @include('student')

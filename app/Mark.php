@@ -15,9 +15,12 @@ class Mark extends Model
     public $timestamps = false; 
     public function task()
     {
-        return $this->belongsTo(Task::class, 'TaskId');
+        return $this->belongsTo(TaskModel::class, 'TaskId', 'Id');
     }
-
+    public function subject()
+    {
+        return $this->belongsTo(TaskModel::class, 'TaskId')->with('subject');
+    }
     public function student()
     {
         return $this->belongsTo(Student::class, 'StudentId');

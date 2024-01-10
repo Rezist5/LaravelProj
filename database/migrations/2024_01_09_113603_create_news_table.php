@@ -17,7 +17,9 @@ class CreateNewsTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
-            $table->date('created_at');
+            $table->date('date');
+            $table->string('PictureFilePath');
+
         });
     }
 

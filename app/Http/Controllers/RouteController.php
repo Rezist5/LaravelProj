@@ -15,18 +15,23 @@ class RouteController extends Controller
                 
         $scheduleController = new ScheduleController();
         $taskController = new TaskController();
+        $newsController = new NewsController();
         $todayLessons = $scheduleController->getLessonsForToday();
         $today = now()->toDateString(); 
+        $news = $newsController->getNews();
+        $markcontroller = new MarkController();
         if($userType == 'student')
         {
             $stud = Student::where('Id', Auth::user()->UserId)->first();
+            $marks = $markcontroller->getLastMarks();
             $top3Tasks = $taskController->getTop3Tasks($stud->ClassId);
-            return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'tasks' => $top3Tasks ]);
+           
+            return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'tasks' => $top3Tasks, 'marks' => $marks, 'newsList' => $news ]);
         }
         else if($userType == 'teacher')
         {
             $Tasks = $taskController->getUnverifiedTasks();
-            return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'tasks' => $Tasks ]);
+            return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'Tasks' => $Tasks, 'newsList' => $news ]);
         }
         return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons]);
     }
@@ -36,10 +41,27 @@ class RouteController extends Controller
         $taskController = new TaskController();
         $todayLessons = $scheduleController->getLessonsForToday();
         $today = now()->toDateString(); 
-        
+        $userType = Auth::user()->UserType;
         $stud = Student::where('Id', Auth::user()->UserId)->first();
         $Tasks = $taskController->getAllTasks($stud->ClassId);
-        return view('StudentTasks', ['today'=> $today ,'tasks' => $Tasks ]);
+        return view('StudentTasks', ['today'=> $today ,'tasks' => $Tasks, 'userType' => $userType]);
+        
+    }
+    public function TeacherTasks()
+    {              
+        $taskController = new TaskController();
+        $userType = Auth::user()->UserType;
+        $teach = Teacher::where('Id', Auth::user()->UserId)->first();
+        $Tasks = $taskController->getAllUnverifiedTasks();
+        return view('TeacherTasks   ', ['tasks' => $Tasks, 'userType' => $userType ]);
+        
+    }
+    public function StudentMarks()
+    {              
+        $userType = Auth::user()->UserType;
+        $markcontroller = new MarkController();
+        $marksBySubject = $markcontroller->getMarksBySubject();
+        return view('StudentMarks', ['marksBySubject' => $marksBySubject, 'userType' => $userType ]);
         
     }
     public function lessons()

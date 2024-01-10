@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Lesson; 
+use App\News;
+use App\Subject;
+use App\ClassTable;
 
 class AdminController extends Controller
 {
@@ -27,14 +30,41 @@ class AdminController extends Controller
 
         return redirect()->back();
     }
-    public function createNews(Request $request)
+    public function createSubjects(Request $request)
     {
-        $News = new News();
-        $News->title = $request->input('title');
-        $News->description = $request->input('description');
-        $News->date = now()->toDateString();
-        $News->save();
+        $subject = new Subject();
+        $subject->name = $request->input('name'); 
+        $subject->save(); 
 
         return redirect()->back();
+    }
+    public function createClass(Request $request)
+    {
+        
+        $class = new ClassTable();
+        $class->ClassName = $request->input('name');
+        $class->grade = $request->input('grade'); 
+        $class->save(); 
+
+        return redirect()->back();
+    }
+    public function createNews(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
+        ]);
+
+        $picturePath = $request->file('picture')->store('news_images'); // Сохраняем изображение
+
+        $news = new News();
+        $news->title = $request->input('title');
+        $news->description = $request->input('description');
+        $news->date = now()->toDateString();
+        $news->PictureFilePath = $picturePath;
+        $news->save();
+
+        return redirect()->back()->with('success', 'Новость успешно создана');
     }
 }

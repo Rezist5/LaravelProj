@@ -11,7 +11,7 @@ class News extends Model
         'title',
         'description',
         'date',
-
+        'PictureFilePath',
     ];
     public $timestamps = false;
      

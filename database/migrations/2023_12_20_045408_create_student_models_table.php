@@ -20,7 +20,6 @@ class CreateStudentModelsTable extends Migration
             $table->string('Thirdname');
             $table->decimal('AvgMark', 5, 2);
             $table->foreignId('ClassId');
-            $table->integer('Grade');
             $table->foreign('ClassId')->references('id')->on('ClassTable');
 
             

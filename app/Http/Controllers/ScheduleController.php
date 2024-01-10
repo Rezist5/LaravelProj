@@ -21,6 +21,7 @@ class ScheduleController extends Controller
         if($request)
         {
             $date = $request->input('lesson_date');
+            
         }
         else
         {
@@ -34,19 +35,29 @@ class ScheduleController extends Controller
                         ->where('LessonDate', $date)
                         ->orderBy('LessonNumber')  
                         ->get();
-                        return view('studentLessons', ['lessons' => $lessons, 'selectedDate' => $date]);
+                        return view('studentLessons', ['lessons' => $lessons, 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
                 }
             } elseif ($currentUser->UserType === 'teacher') {
                 $teacher = Teacher::where('Id', $currentUser->UserId)->first();
+                
                 if ($teacher) {
-                    $lessons = Lesson::where('TeacherId', $teacher->Id)
+                    $lessons = Lesson::where('TeacherId', $currentUser->UserId)
                         ->where('LessonDate', $date)
                         ->orderBy('LessonNumber')
                         ->with('task')
                         ->get();
-                    
-                        return view('teacherLessons', ['lessons' => $lessons, 'selectedDate' => $date]);
+
+                    return view('teacherLessons', ['lessons' => $lessons, 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
                 }
+            }
+            elseif ($currentUser->UserType === 'admin') {
+                $lessons = Lesson::where('LessonDate', $date)
+                    ->orderBy('classId')
+                    ->orderBy('LessonNumber')
+                    ->with('task')
+                    ->get();
+        
+                return view('adminLessons', ['lessons' => $lessons, 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
             }     
         return redirect()->back();
     }
@@ -73,11 +84,11 @@ class ScheduleController extends Controller
 
             $teacher = Teacher::where('Id', $currentUser->UserId)->first();
             $today = now()->toDateString(); 
-    
+            
             $lessons = Lesson::where('TeacherId', $currentUser->UserId)
-                ->where('LessonDate', $today)
-                ->orderBy('LessonNumber')
-                ->get();
+                            ->where('LessonDate', $today)
+                            ->orderBy('LessonNumber')
+                            ->get();
             return $lessons;
         }
         

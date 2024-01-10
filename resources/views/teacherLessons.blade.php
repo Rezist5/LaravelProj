@@ -1,5 +1,5 @@
 @extends('layout')
-
+@include('header')
 @section('main_content')
 <form action="{{ route('lessons.by.date', ['date' => $selectedDate]) }}" method="GET">
     @csrf

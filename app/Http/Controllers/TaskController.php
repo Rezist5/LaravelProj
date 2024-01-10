@@ -20,23 +20,33 @@ class TaskController extends Controller
     }
     public function getTop3Tasks($classId)
     {
-        $top3Tasks = TaskModel::where('classId', $classId)->orderBy('deadline', 'desc')
-            ->take(3)
-            ->get();
-
-        return $top3Tasks;
+        $studId = Auth::user()->UserId;
+        $tasksWithoutSolutions = TaskModel::whereDoesntHave('solution', function ($query) use ($studId) {
+            $query->where('StudentId', $studId);
+        })
+        ->limit(3)
+        ->get();
+        return $tasksWithoutSolutions;
     }
     public function getUnverifiedTasks()
     {
         $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
         $Tasks = TaskModel::where('subjectId', $teacher->subjectId)->get();
-        $taskIds = $tasks->pluck('Id');
+        $taskIds = $Tasks->pluck('Id');
         $SolTasks = SolutionTaskModel::whereIn('TaskId', $taskIds)
                             ->where('verified', False)
-                            ->orderBy('lessonId', 'desc')
-                            ->get();
-            
-
+                            ->take(5)
+                            ->get();    
+        return $SolTasks;
+    }
+    public function getAllUnverifiedTasks()
+    {
+        $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
+        $Tasks = TaskModel::where('subjectId', $teacher->subjectId)->get();
+        $taskIds = $Tasks->pluck('Id');
+        $SolTasks = SolutionTaskModel::whereIn('TaskId', $taskIds)
+                            ->where('verified', False)
+                            ->get();    
         return $SolTasks;
     }
     public function getAllTasks($classId)
@@ -55,17 +65,26 @@ class TaskController extends Controller
                 $file = $request->file('taskFile');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('task_files', $fileName);
-                
-                $currentUser = Auth::user();
-                $task = new TaskModel();
-                $task->lessonId = $request->lessonId; 
-                $task->subjectId = $teacher->SubjectId; 
-                $task->classId = $request->classId; 
-                $task->taskFilePath = $filePath;
-                $task->deadline = $request->deadline;
-                $task->save();
 
-                return redirect()->back();
+                $taskCheck = TaskModel::where('lessonId', $request->lessonId)->first();
+                if($taskCheck)
+                {
+                    $taskCheck->taskFilePath = $filePath;
+                    $task->save();
+                    return redirect()->back();
+                }
+                else
+                {
+                    $task = new TaskModel();
+                    $task->lessonId = $request->lessonId; 
+                    $task->subjectId = $teacher->SubjectID;
+                    $task->classId = $request->classId; 
+                    $task->taskFilePath = $filePath;
+                    $task->deadline = $request->deadline;
+                    $task->save();
+    
+                    return redirect()->back();
+                }      
             } 
             else {
                 return redirect()->back();
@@ -86,17 +105,30 @@ class TaskController extends Controller
                 $file = $request->file('file');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('solution_files', $fileName);
-        
                 $taskId = $request->taskId;
+                $solTaskCheck = SolutionTaskModel::where('TaskId', $request->taskId)->where('StudentId', Auth::user()->UserId)->first();
+                if($solTaskCheck)
+                {
+                    $solTaskCheck->SolutionFilePath = $filePath;
+                    $solTaskCheck->save();
+                    //dd($solTaskCheck);
+                    return redirect()->back();
+                }
+                else
+                {
+                    
 
-                $task = new SolutionTaskModel();
-                $task->TaskId = $taskId;
-                $task->SolutionfilePath = $filePath; 
-                $task->StudentId = Auth::user()->UserId; 
-                $task->downloaded = true; 
-                $task->save();
-
-                return redirect()->back();
+                    $task = new SolutionTaskModel();
+                    $task->TaskId = $taskId;
+                    $task->SolutionfilePath = $filePath; 
+                    $task->StudentId = Auth::user()->UserId; 
+                    $task->downloaded = true; 
+                    
+                    $task->save();
+    
+                    return redirect()->back();
+                }
+               
             } else {
                 return redirect()->back();
             }
@@ -105,10 +137,12 @@ class TaskController extends Controller
         {
             $studId = $request->StudentId;
             $lessonId = $request->lessonId;
+            
             $task = TaskModel::where('lessonId', $lessonId)->first();
             $SolTask = SolutionTaskModel::where('StudentId', $studId)
-            ->where('TaskId', $task->Id)
-            ->first();        
+            ->where('TaskId', $task->id)
+            ->first();
+                    
             if (!$SolTask) {
                 return redirect()->back()->withErrors(['message' => 'Solution file not found.']);
             }

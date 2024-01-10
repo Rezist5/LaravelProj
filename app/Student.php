@@ -34,7 +34,7 @@ class Student extends Model
     {
         return $this->hasMany(Mark::class, 'StudentId');
     }
-    public function marks()
+    public function mark()
     {
         return $this->hasMany(SolutionTaskModel::class, 'StudentId');
     }

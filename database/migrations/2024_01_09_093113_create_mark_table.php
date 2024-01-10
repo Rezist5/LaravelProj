@@ -16,6 +16,7 @@ class CreateMarkTable extends Migration
         Schema::create('Mark', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('MarkNumber');
+            $table->date('MarkDate');
             $table->foreignId('TaskId');
             $table->foreignId('StudentId');
 
