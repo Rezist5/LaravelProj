@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
 use App\Student;
+use App\ClassTable;
 use Illuminate\Http\Request;
 
 class RouteController extends Controller
@@ -54,6 +55,13 @@ class RouteController extends Controller
         $teach = Teacher::where('Id', Auth::user()->UserId)->first();
         $Tasks = $taskController->getAllUnverifiedTasks();
         return view('TeacherTasks   ', ['tasks' => $Tasks, 'userType' => $userType ]);
+        
+    }
+    public function AdminClasses()
+    {          
+        $userType = Auth::user()->UserType;    
+        $classes = ClassTable::all();
+        return view('AdminClasses   ', ['classes' => $classes, 'userType' => $userType ]);
         
     }
     public function StudentMarks()

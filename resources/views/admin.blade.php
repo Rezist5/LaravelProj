@@ -1,6 +1,7 @@
 @section('main_content')
 <main>
     <section class="createLessons">
+    <h2>Create Schebule</h2>
     <form action="{{ route('create.lessons') }}" method="POST">
     @csrf
     <input type="date" name="lesson_date" required>
@@ -91,8 +92,6 @@
         <label for="studentThirdname">Student Third Name:</label>
         <input type="text" id="studentThirdname" name="studentThirdname" >
 
-        <label for="avgMark">Average Mark:</label>
-        <input type="number" step="0.01" id="avgMark" name="avgMark" >
 
         <label for="classId">Class ID:</label>
         <input type="number" id="classId" name="classId" >

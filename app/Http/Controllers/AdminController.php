@@ -56,7 +56,7 @@ class AdminController extends Controller
             'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
 
-        $picturePath = $request->file('picture')->store('news_images'); // Сохраняем изображение
+        $picturePath = $request->file('picture')->store('news_images'); 
 
         $news = new News();
         $news->title = $request->input('title');

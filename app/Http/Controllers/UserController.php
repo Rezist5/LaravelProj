@@ -39,7 +39,6 @@ class UserController extends Controller
             'name' => $request->input('studentName'),
             'Surname' => $request->input('studentSurname'),
             'Thirdname' => $request->input('studentThirdname'),
-            'AvgMark' => $request->input('avgMark'),
             'ClassId' => $request->input('classId'),
         ];
 
