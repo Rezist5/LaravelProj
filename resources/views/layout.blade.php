@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -53,7 +52,27 @@ table {
     border-collapse: collapse;
     margin-bottom: 20px;
 }
+.grade-block {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
 
+.grade-green {
+    background-color: #4CAF50; /* Зелёный цвет */
+    color: white;
+}
+
+.grade-orange {
+    background-color: #FFA500; /* Оранжевый цвет */
+    color: white;
+}
+
+.grade-red {
+    background-color: #FF0000; /* Красный цвет */
+    color: white;
+}
 table th,
 table td {
     border: 1px solid #ccc;
@@ -85,13 +104,13 @@ table td {
 }
 
 .carousel-inner .carousel-item {
-    display: none;
+    display: block !important;
     position: relative;
 }
 
 .carousel-control-prev,
 .carousel-control-next {
-    position: absolute;
+    position: relative;
     top: 50%;
     z-index: 5;
     display: flex;
@@ -118,7 +137,61 @@ main {
     align-items: center;
     padding: 20px;
 }
+.grade-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
 
+.grade-item {
+        flex: 0 0 auto;
+        padding: 0 5px; /* Add some padding to separate grades */
+        box-sizing: border-box;
+    }
+    
+.grade-block {
+    width: 100px;  /* Задайте ширину квадрата оценки по вашему усмотрению */
+    height: 100px; /* Задайте высоту квадрата оценки по вашему усмотрению */
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.grade-block-markonly {
+    display: inline-block;
+    width: 50px;  /* Задайте ширину квадрата оценки по вашему усмотрению */
+    height: 50px; /* Задайте высоту квадрата оценки по вашему усмотрению */
+    margin-right: 10px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.grade-green {
+    background-color: #4CAF50; /* Зелёный цвет */
+    color: white;
+}
+
+.grade-orange {
+    background-color: #FFA500; /* Оранжевый цвет */
+    color: white;
+}
+
+.grade-red {
+    background-color: #FF0000; /* Красный цвет */
+    color: white;
+}
 section {
     margin-bottom: 30px;
     background-color: #fff;
@@ -247,25 +320,159 @@ input[type='file'] {
     color: red;
     margin-top: 10px;
 }
+body {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    color: #3366cc; /* Синий цвет */
+}
+
+/* Ссылки */
+a {
+    color: #3366cc; /* Синий цвет */
+}
+
+a:hover {
+    color: #004080; /* Темно-синий цвет при наведении */
+}
+
+/* Фон секции */
+section {
+    background-color: #ffffff; /* Белый цвет */
+}
+
+/* Тень блока секции */
+section {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Таблицы */
+table th, table td {
+    border: 1px solid #3366cc; /* Синий цвет */
+}
+
+table th {
+    background-color: #f0f0f0;
+}
+
+/* Кнопки */
+button {
+    background-color: #3366cc; /* Синий цвет */
+    color: #ffffff; /* Белый цвет текста */
+}
+
+button:hover {
+    background-color: #004080; /* Темно-синий цвет при наведении */
+}
+
+/* Стиль для задачи */
+.task-item {
+    border-color: #3366cc; /* Синий цвет рамки задачи */
+}
+
+/* Ошибка */
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+.message-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: 10px;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px 10px 0 10px;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+
+        .other-user-message {
+            align-self: flex-start;
+            background-color: #ddd;
+            border-radius: 10px 10px 10px 0;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+.news-image {
+         /* Изображение займет 100% ширины родительского контейнера */
+  height: auto; /* Высота будет автоматически рассчитана для сохранения соотношения сторон */
+  max-width: 400px; /* Максимальная ширина изображения, чтобы избежать растягивания */
+  display: block; /* Убедитесь, что изображение не имеет отступа снизу */
+  margin: 0 auto; /* Центрирование изображения внутри родительского контейнера */
+}
+.news-slider-container {
+  width: 100%; /* Занимает всю ширину родительского контейнера */
+  overflow: hidden;
+  height: 400px; /* Задайте фиксированную высоту, чтобы показывать только одну новость сразу */
+  position: relative;
+}
+
+.news-slider {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s ease;
+  height: 100%; /* Занимает 100% высоты контейнера */
+}
+
+.news {
+  box-sizing: border-box;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Прокрутка новостей при hover */
+.news-slider-container:hover .news-slider {
+  transform: translateY(-100%);
+}
+
+/* Настройка стилей для изображения и других элементов по мере необходимости */
+.news img {
+  max-width: 100%;
+  height: auto;
+}
     </style>
+
+    <!-- CSS Bootstrap link -->
+
+<!-- JS Bootstrap link -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+<!-- CSS Bootstrap link -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<!-- JS Bootstrap links (Popper.js and Bootstrap JS) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-Qr4qcr5FhLQDy/8uR8LhFVovWy++L8BvNX1I7/Z8E+mcNFlcTz6mGgyd91b2v2MR" crossorigin="anonymous"></script>
     <!-- Bootstrap CSS -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- jQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Popper.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Bootstrap JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+z8r3+J24BR3E3R+Q6OvvkLXIUnzrEAiKK1cSkJ" crossorigin="anonymous">
 </head>
 <body>
     

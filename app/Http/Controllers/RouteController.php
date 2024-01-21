@@ -60,7 +60,7 @@ class RouteController extends Controller
     public function AdminClasses()
     {          
         $userType = Auth::user()->UserType;    
-        $classes = ClassTable::all();
+        $classes = ClassTable::orderby('grade', 'asc')->get();
         return view('AdminClasses   ', ['classes' => $classes, 'userType' => $userType ]);
         
     }

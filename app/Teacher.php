@@ -39,6 +39,22 @@ class Teacher extends Model
         }
         return null;
     }
+    public function getStudents()
+    {
+        $lessons = Lesson::where('TeacherId', $this->id)->get();
+        $allStudentsIds = [];
+        $fg = false;
+        foreach ($lessons as $lesson) {
+            $students = Student::where('classId', $lesson->classId)->get();
+            foreach ($students as $student) {
+                if (!in_array($student->id, $allStudentsIds)) {
+                    $allStudentsIds[] = $student->id;
+                }
+            }
+        }
+        $uniqueStudents = Student::whereIn('id', $allStudentsIds)->get();
+        return $uniqueStudents;
+    }
 
     public static function deleteTeacher($teacherId)
     {

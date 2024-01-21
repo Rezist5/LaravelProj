@@ -45,25 +45,20 @@ class MarkController extends Controller
     {
         $studentId = Auth::user()->UserId;
 
-        $tasks = TaskModel::where('verified', TRUE)->get();
-        $taskIds = $tasks->pluck('Id');         
-
         $marksBySubject = [];
         
-        foreach ($taskIds as $taskId) {
-            $marks = Mark::where('TaskId', $taskId)
-                        ->where('StudentId', $studentId)
+        $marks = Mark::where('StudentId', $studentId)
                         ->with('task.subject')
                         ->get();
-            
+        
             foreach ($marks as $mark) {
-                $subjectName = $mark->task->subject->name;
+                $subjectName = $mark->getTask()->subjectName();
                 if (!array_key_exists($subjectName, $marksBySubject)) {
                     $marksBySubject[$subjectName] = [];
                 }
                 $marksBySubject[$subjectName][] = $mark;
             }
-        }
+            
         
         return $marksBySubject;
     }

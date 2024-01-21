@@ -2,7 +2,7 @@
 
 <main>
 <section class="schedule">
-        <h2>Расписание</h2>
+        <h2><a href="lessons">Расписание</a></h2>
         <table>
             <thead>
                 <tr>
@@ -22,7 +22,7 @@
                 <td>{{ $i }}</td>
                 @if($lesson)
                     <td>{{ $lesson->teacher->subject->name }}</td>
-                    <td>{{ $lesson->teacher->name }}</td>
+                    <td>{{ $lesson->teacher->name }} {{ $lesson->teacher->Surname }}</td>
                     <td>{{ $lesson->classroom }}</td>
                 @else
                     <td></td>
@@ -37,69 +37,49 @@
 
 <section class="newShow">
     <h2>News</h2>
-    <div class="news-slider">
+    <div class="news-slider-container" id="newsSliderContainer">
+    <div class="news-slider" id="newsSlider">
         @foreach($newsList as $news)
-            <div class="news-item">
-                <h2>{{ $news->title }}</h2>
+            <div class="news">
+                <h3>{{ $news->title }}</h3>
                 <p>{{ $news->description }}</p>
                 <p>{{ $news->date }}</p>
-                <img src="storage\app\news_images\1.jpg" alt="{{ $news->Title }}">
+                <img class="news-image" src="{{ Storage::url($news->PictureFilePath) }}" alt="{{ $news->title }}">
             </div>
         @endforeach
     </div>
+</div>
 </section>
 <section class="grades">
-    <h2>Grades</h2>
+    <h2><a href="/StudentMarks">Grades</a></h2>
     <div id="carouselGrades" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <!-- Здесь будут ваши оценки -->
-            @foreach($marks as $mark)
-            @if($mark->MarkNumber > 6)
-                <div class="carousel-item ">
-                    <div class="carousel-caption">
-                        <div class="grade-block grade-green">
-                            <h3>{{$mark->subject->name}}</h3>
-                            <h4>{{$mark->MarkNumber}}</h4>
+    <div class="carousel-inner grade-container">
+        @foreach($marks as $mark)
+                <div class="grade-block">
+                    @if($mark->MarkNumber > 6)
+                        <div class="grade-green">
+                            <h3>{{ $mark->task->subjectName() }}</h3>
+                            <h4>{{ $mark->MarkNumber }}</h4>
                         </div>
-                    </div>
-                </div>
-            @endif
-            @if($mark->MarkNumber < 7 && $mark->MarkNumber > 4)
-                <div class="carousel-item">
-                    <div class="carousel-caption">
-                        <div class="grade-block grade-orange">
-                            <h3>{{$mark->subject->name}}</h3>
-                            <h4>{{$mark->MarkNumber}}</h4>
+                    @elseif($mark->MarkNumber < 7 && $mark->MarkNumber > 4)
+                        <div class="grade-orange">
+                            <h3>{{ $mark->task->subject->name }}</h3>
+                            <h4>{{ $mark->MarkNumber }}</h4>
                         </div>
-                    </div>
-                </div>
-            @endif
-            @if($mark->MarkNumber < 5)
-                <div class="carousel-item">
-                    <div class="carousel-caption">
-                        <div class="grade-block grade-red">
-                            <h3>{{$mark->subject->name}}</h3>
-                            <h4>{{$mark->MarkNumber}}</h4>
+                    @else
+                        <div class="grade-red">
+                            <h3>{{ $mark->task->id }}</h3>
+                            <h4>{{ $mark->MarkNumber }}</h4>
                         </div>
-                    </div>
+                    @endif
                 </div>
-            @endif
-            @endforeach
             
-            </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselGrades" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselGrades" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+        @endforeach
     </div>
+</div>
 </section>
 
     <section class="taskShow">
-    <h1>{{ $userType }}</h1>
     <h2><a href="/StudentTasks">Tasks</a></h2>
     <div>
         @foreach($tasks as $task)
@@ -122,4 +102,31 @@
     </div>
     </section>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const newsSliderContainer = document.getElementById('newsSliderContainer');
+  const newsSlider = document.getElementById('newsSlider');
+
+  let isScrolling = false;
+
+  function scrollNews() {
+    if (isScrolling) {
+      const firstNews = newsSlider.firstElementChild;
+      newsSlider.removeChild(firstNews);
+      newsSlider.appendChild(firstNews);
+      newsSlider.style.transform = 'translateY(0)';
+      isScrolling = false;
+    }
+  }
+
+  // Добавляем обработчик события при скроллинге
+  newsSliderContainer.addEventListener('wheel', function() {
+    isScrolling = true;
+    scrollNews();
+  });
+
+  // Или используйте следующую строку, чтобы прокручивать новости через определенное время
+  // setInterval(scrollNews, 3000);
+});
+</script>
 @endsection

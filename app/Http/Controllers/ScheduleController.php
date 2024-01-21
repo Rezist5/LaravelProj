@@ -35,7 +35,7 @@ class ScheduleController extends Controller
                         ->where('LessonDate', $date)
                         ->orderBy('LessonNumber')  
                         ->get();
-                        return view('studentLessons', ['lessons' => $lessons, 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
+                        return view('studentLessons', ['lessons' => $lessons,  'today' => now()->toDateString(),'selectedDate' => $date, 'userType' => $currentUser->UserType]);
                 }
             } elseif ($currentUser->UserType === 'teacher') {
                 $teacher = Teacher::where('Id', $currentUser->UserId)->first();
@@ -47,7 +47,7 @@ class ScheduleController extends Controller
                         ->with('task')
                         ->get();
 
-                    return view('teacherLessons', ['lessons' => $lessons, 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
+                    return view('teacherLessons', ['lessons' => $lessons, 'today' => now()->toDateString(), 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
                 }
             }
             elseif ($currentUser->UserType === 'admin') {
@@ -57,7 +57,7 @@ class ScheduleController extends Controller
                     ->with('task')
                     ->get();
         
-                return view('adminLessons', ['lessons' => $lessons, 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
+                return view('adminLessons', ['lessons' => $lessons, 'today' => now()->toDateString(), 'selectedDate' => $date, 'userType' => $currentUser->UserType]);
             }     
         return redirect()->back();
     }

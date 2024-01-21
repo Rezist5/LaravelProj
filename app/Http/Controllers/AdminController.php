@@ -4,32 +4,108 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Lesson; 
+use App\Teacher;
 use App\News;
 use App\Subject;
 use App\ClassTable;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
-    public function createLessons(Request $request)
-    {
-        $lessonDate = $request->input('lesson_date');
+    protected function makeValidationRules($index, $request)
+{
+    return [
+        "teacher_id_$index" => [
+            Rule::exists('teacher', 'id'),
+        ],
+        "class_id_$index" => [
+            Rule::exists('ClassTable', 'id'),
+        ],
+    ];
+}
+    
+public function createLessons(Request $request)
+{
+    $request->validate([
+        'lesson_date' => 'required|date',
+    ]);
 
+    $lessonDate = $request->input('lesson_date');
+    $errors = [
+        'common' => [],
+    ];
+
+    for ($i = 1; $i <= 9; $i++) {
+        $validator = \Validator::make($request->all(), $this->makeValidationRules($i, $request));
+
+        // Проверка наличия преподавателя
+        $fullName = $request->input("teacher_name_$i");
+        $classFull = $request->input("class_name_$i");
+
+        // Проверка наличия пробела перед использованием explode
+        if (!empty($fullName) && strpos($fullName, ' ') !== false) {
+            list($firstName, $lastName) = explode(' ', $fullName, 2);
+
+            $teacher = Teacher::where('name', $firstName)
+                            ->where('Surname', $lastName)
+                            ->first();
+
+            if (!$teacher) {
+                $errors['common'][] = "Teacher not found for row $i";
+            }
+        } elseif (!empty($fullName)) {
+            $errors['common'][] = "Invalid format for teacher name in row $i";
+        }
+
+        // Проверка наличия пробела перед использованием explode для названия класса
+        if (!empty($classFull) && strpos($classFull, ' ') !== false) {
+            list($classGrade, $className) = explode(' ', $classFull, 2);
+
+            $class = ClassTable::where('grade', $classGrade)
+                            ->where('ClassName', $className)
+                            ->first();
+
+            if (!$class) {
+                $errors['common'][] = "Class not found for row $i";
+            }
+        } elseif (!empty($classFull)) {
+            $errors['common'][] = "Invalid format for class name in row $i";
+        }
+    }
+
+    if (empty($errors['common'])) {
         for ($i = 1; $i <= 9; $i++) {
-            $teacherId = $request->input("teacher_id_$i");
-            $classId = $request->input("class_id_$i");
-            $classroom = $request->input("classroom_$i");
+            // Проверка наличия преподавателя
+            $fullName = $request->input("teacher_name_$i");
+            if (!empty($fullName)) {
+                $lesson = Lesson::updateOrCreate(
+                    [
+                        'LessonDate' => $lessonDate,
+                        'LessonNumber' => $i,
+                    ],
+                    [
+                        'TeacherId' => $teacher->id,
+                        'classId' => $class->id,
+                        'classroom' => $request->input("classroom_$i"),
+                    ]
+                );
 
-            $lesson = new Lesson();
-            $lesson->LessonDate = $lessonDate; 
-            $lesson->LessonNumber = $i; 
-            $lesson->TeacherId = $teacherId;
-            $lesson->classId = $classId;
-            $lesson->classroom = $classroom;
-            $lesson->save(); 
+                // Создание расписания на 4 недели
+                for ($week = 0; $week < 4; $week++) {
+                    $lesson->replicate()->update([
+                        'LessonDate' => \Carbon\Carbon::parse($lessonDate)->addWeeks($week + 1),
+                        'LessonNumber' => $i,
+                    ]);
+                }
+            }
         }
 
         return redirect()->back();
     }
+
+    return redirect()->back()->withErrors($errors)->withInput();
+}
+
     public function createSubjects(Request $request)
     {
         $subject = new Subject();
@@ -55,9 +131,9 @@ class AdminController extends Controller
             'description' => 'required',
             'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
-
-        $picturePath = $request->file('picture')->store('news_images'); 
-
+        
+        $picturePath = $request->file('picture')->store('news_images', 'public');
+        
         $news = new News();
         $news->title = $request->input('title');
         $news->description = $request->input('description');

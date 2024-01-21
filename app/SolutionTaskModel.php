@@ -27,4 +27,11 @@ class SolutionTaskModel extends Model
     {
         return $this->belongsTo(Student::class, 'StudentId');
     }
+    public function getMark()
+    {
+        $mark = Mark::where('TaskId', $this->TaskId)->where('StudentId', $this->StudentId)->first();
+        return $mark;
+        
+    }
+    
 }

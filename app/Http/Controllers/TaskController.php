@@ -54,7 +54,11 @@ class TaskController extends Controller
         $Tasks = TaskModel::where('classId', $classId)->orderBy('deadline', 'desc')
             ->get();
 
-        return $Tasks;
+        $taskIds = $Tasks->pluck('id');
+
+        $solutions = SolutionTaskModel::whereIn('taskId', $taskIds)->get();
+
+        return $solutions;
     }
     // Действие для загрузки заданий учителями
         public function uploadTaskFile(Request $request)
@@ -111,7 +115,6 @@ class TaskController extends Controller
                 {
                     $solTaskCheck->SolutionFilePath = $filePath;
                     $solTaskCheck->save();
-                    //dd($solTaskCheck);
                     return redirect()->back();
                 }
                 else

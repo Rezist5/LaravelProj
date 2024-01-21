@@ -46,7 +46,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Date</th>
+                    <th>Class</th>
                     <th>Lesson Number</th>
                     <th>classroom</th>
                 </tr>
@@ -54,7 +54,7 @@
             <tbody>
                 @foreach($lessons as $lesson)
                     <tr>
-                        <td>{{ $lesson->LessonDate }}</td>
+                        <td>{{ $lesson->class->grade }} {{ $lesson->class->ClassName }} </td>
                         <td>{{ $lesson->LessonNumber }}</td>
                         <td>{{ $lesson->classroom }}</td>
                     </tr>

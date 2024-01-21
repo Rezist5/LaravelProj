@@ -11,6 +11,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MarkController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\ChatPageController;
 
 Route::get('/', [RouteController::class, 'index'])->middleware('auth');
 Route::get('/lessons', [RouteController::class, 'lessons'])->middleware('auth');
@@ -18,7 +19,7 @@ Route::get('/StudentTasks', [RouteController::class, 'StudentTasks'])->middlewar
 Route::get('/TeacherTasks', [RouteController::class, 'TeacherTasks'])->middleware('auth');
 Route::get('/AdminClasses', [RouteController::class, 'AdminClasses'])->middleware('auth');
 Route::get('/StudentMarks', [RouteController::class, 'StudentMarks'])->middleware('auth');
-
+Route::match(['get', 'post'], '/chat/{teacherId?}', [ChatPageController::class, 'showChatPage'])->name('chat.page')->middleware('auth');
 
 Route::get('/lessons/{date}', [ScheduleController::class, 'getLessonsByDate'])->name('lessons.by.date');
 
@@ -43,5 +44,7 @@ Route::post('/createSubject', [AdminController::class, 'createSubjects'])->name(
 Route::post('/createClass', [AdminController::class, 'createClass'])->name('class.create');
 
 
+Route::post('/start-chat', [ChatPageController::class, 'startChat'])->name('start-chat');
+Route::post('/send-message', [ChatPageController::class, 'sendChatMessage'])->name('send-message');
 
 

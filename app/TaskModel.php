@@ -3,6 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Lesson;
+use App\Subject;
+use App\Teacher;
 
 class TaskModel extends Model
 {
@@ -21,9 +24,28 @@ class TaskModel extends Model
         'verified' => false,
         'downloaded' => false,
     ];
-    public function marks()
+    public function mark()
     {
         return $this->hasMany(Mark::class, 'TaskId');
+    }
+    public function subjectName()
+    {
+        $subject = Subject::find($this->subjectId);
+        if ($subject) {
+            return $subject->name;
+        }
+
+        return 'Unknown Subject';
+    }
+    public function TaskTeacher()
+    {
+        $lesson = Lesson::find($this->lessonId);
+        $teacher = Teacher::find($lesson->TeacherId);
+        if ($teacher) {
+            return $teacher;
+        }
+
+        return 'Unknown teacher';
     }
     public function solution()
     {
@@ -36,7 +58,7 @@ class TaskModel extends Model
 
     public function subject()
     {
-        return $this->belongsTo(Subject::class, 'subjectID');
+        return $this->belongsTo(Subject::class, 'subjectID', 'subjectId');
     }
 
     public function classTable()

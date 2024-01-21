@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\TaskModel;
 
 class Mark extends Model
 {
@@ -17,9 +18,14 @@ class Mark extends Model
     {
         return $this->belongsTo(TaskModel::class, 'TaskId', 'Id');
     }
-    public function subject()
+    public function getTask()
     {
-        return $this->belongsTo(TaskModel::class, 'TaskId')->with('subject');
+        $task = TaskModel::find($this->TaskId);
+        if ($task) {
+            return $task;
+        }
+
+        return null;
     }
     public function student()
     {

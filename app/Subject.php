@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Teacher;
+use App\TaskModel;
 
 class Subject extends Model
 {
@@ -16,9 +17,13 @@ class Subject extends Model
     protected $fillable = [
         'name',
     ];
-    public function lessons()
+    public function teacher()
     {
         return $this->hasMany(Teacher::class, 'SubjectID');
+    }
+    public function task()
+    {
+        return $this->hasMany(TaskModel::class, 'subjectId');
     }
     public function getName()
     {

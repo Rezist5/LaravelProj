@@ -3,7 +3,7 @@
 @section('main_content')
 <form action="{{ route('lessons.by.date', ['date' => $selectedDate]) }}" method="GET">
     @csrf
-    <input type="date" name="lesson_date" required>
+    <input type="date" value="{{ $today }}" name="lesson_date" required>
     <button type="submit">Submit</button>
 </form>
 @if(isset($selectedDate))

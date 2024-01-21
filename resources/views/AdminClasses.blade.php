@@ -11,10 +11,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($classes as $class)
-                <td>$class->ClassName</td>
-                <td>$class->grade</td>
-            @endforeach
+            <tr>
+                @foreach($classes as $class)
+                    <td>{{$class->ClassName}}</td>
+                    <td>{{$class->grade}}</td>
+                @endforeach
+            </tr>
         </tbody>
     </table>
 @endsection

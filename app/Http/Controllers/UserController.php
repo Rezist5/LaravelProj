@@ -8,13 +8,15 @@ use App\Student;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     
     public function createUser(Request $request)
-    {
+{
     $userType = $request->input('userType');
+
     switch ($userType) {
         case 'student':
             return $this->createNewUserStudent($request);
@@ -26,51 +28,70 @@ class UserController extends Controller
             return $this->createNewUserAdmin($request);
             break;
     }
+}
+
+public function createNewUserStudent(Request $request)
+{
+    $request->validate([
+        'username' => 'unique:user',
+        'password' => 'min:6',
+        'subjectId' => 'exists:subject,id',
+    ]);
+
+    // Создание учителя
+    $data = [
+        'name' => $request->input('teacherName'),
+        'Surname' => $request->input('teacherSurname'),
+        'Thirdname' => $request->input('teacherThirdname'),
+        'SubjectID' => $request->input('subjectId')
+    ];
+
+    $newTeacher = Teacher::createTeacher($data);
+
+    $user = new User();
+    $user->username = $request->input('username');
+    $user->password = Hash::make($request->input('password'));
+    $user->UserType = 'teacher';
+    $user->UserId = $newTeacher->id;
+    $user->save();
+
+    return redirect()->back();
+}
+
+// Создание нового учителя
+public function createNewUserTeacher(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'username' => 'unique:user',
+        'password' => 'min:6',
+        'subjectId' => 'exists:subject,id',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput()->withErrors(['common-error' => 'There are errors in the form.']);
     }
 
-    public function createNewUserStudent(Request $request)
-    {
-        $user = new User();
-        $user->username = $request->input('username');
-        $user->password = Hash::make($request->input('password'));
-        $user->UserType = 'student';
+    // Создание учителя
+    $data = [
+        'name' => $request->input('teacherName'),
+        'Surname' => $request->input('teacherSurname'),
+        'Thirdname' => $request->input('teacherThirdname'),
+        'SubjectID' => $request->input('subjectId')
+    ];
 
-        $data = [
-            'name' => $request->input('studentName'),
-            'Surname' => $request->input('studentSurname'),
-            'Thirdname' => $request->input('studentThirdname'),
-            'ClassId' => $request->input('classId'),
-        ];
+    $newTeacher = Teacher::createTeacher($data);
 
-        $stud = Student::createStudent($data);
+    // Создание пользователя
+    $user = new User();
+    $user->username = $request->input('username');
+    $user->password = Hash::make($request->input('password'));
+    $user->UserType = 'teacher';
+    $user->UserId = $newTeacher->id;
+    $user->save();
 
-        $user->UserId = $stud->id;
-        $user->save();
-        return redirect()->back();
-       
-    }
+    return redirect()->back();
+}
 
-    // Создание нового учителя
-    public function createNewUserTeacher(Request $request)
-    {
-        $user = new User();
-        $user->username = $request->input('username');
-        $user->password = Hash::make($request->input('password'));
-        $user->UserType = 'teacher';
-
-        $data = [
-            'name' => $request->input('teacherName'),
-            'Surname' => $request->input('teacherSurname'),
-            'Thirdname' => $request->input('teacherThirdname'),
-            'SubjectID' => $request->input('subjectId')
-        ];
-
-        $newTeacher = Teacher::createTeacher($data);
-
-        $user->UserId = $newTeacher->id;
-        $user->save();
-        return redirect()->back();
-    }
 
     // Создание нового админа
     public function createNewUserAdmin(Request $request)
