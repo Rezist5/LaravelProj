@@ -10,6 +10,7 @@ class Mark extends Model
     protected $table = 'Mark';
     protected $fillable = [
         'MarkNumber',
+        'MarkDate',
         'TaskId',
         'StudentId',
     ];

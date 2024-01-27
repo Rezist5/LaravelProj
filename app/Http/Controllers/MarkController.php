@@ -40,7 +40,36 @@ class MarkController extends Controller
 
         return redirect()->back()->with('success', 'Оценка успешно добавлена.');
     }
+    public function ControllStore(Request $request)
+    {
+        $lessonId = $request->lessonId;
+        $studentId = $request->studentId;
+        $task = TaskModel::where('LessonID', $lessonId)->first();
+        $existingMark = Mark::where('TaskId', $task->id)
+                            ->where('StudentId', $studentId)
+                            ->first();
+        $SolTask = SolutionTaskModel::where('TaskId', $task->id)
+                            ->where('StudentId', $studentId)->first();
+        
+        $SolTask->verified = 1;
 
+        $SolTask->save();                      
+        if ($existingMark) {
+            
+            return redirect()->back()->withErrors([
+                'message' => 'Оценка за это задание уже была поставлена.',
+            ]);
+        }
+        
+        $mark = new Mark();
+        $mark->MarkNumber = $request->mark;
+        $mark->MarkDate = now()->toDateString();
+        $mark->TaskId = $task->id; 
+        $mark->StudentId = $studentId;
+        $mark->save();
+
+        return redirect()->back()->with('success', 'Оценка успешно добавлена.');
+    }
     public function getMarksBySubject()
     {
         $studentId = Auth::user()->UserId;

@@ -65,7 +65,7 @@ class TaskController extends Controller
         {
             if ($request->hasFile('taskFile')) {
                 $currentUser = Auth::user();
-                $teacher = Teacher::where('Id', $currentUser->UserId)->first();
+                $teacher = Teacher::find($currentUser->UserId)->first();
                 $file = $request->file('taskFile');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('task_files', $fileName);

@@ -9,6 +9,7 @@ use App\News;
 use App\Subject;
 use App\ClassTable;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -24,96 +25,99 @@ class AdminController extends Controller
     ];
 }
     
-public function createLessons(Request $request)
-{
-    $request->validate([
-        'lesson_date' => 'required|date',
-    ]);
+    public function createLessons(Request $request)
+    {
+        $request->validate([
+            'lesson_day' => 'required|integer|between:1,7', // 1-7 represent Monday-Sunday
+            'lesson_month' => 'required|integer|between:1,12', // 1-12 represent January-December
+        ]);
 
-    $lessonDate = $request->input('lesson_date');
-    $errors = [
-        'common' => [],
-    ];
+        $lessonDay = $request->input('lesson_day');
+        $lessonMonth = $request->input('lesson_month');
+        $selectedClassId = $request->input('selected_class');
+        $year = now()->year; // You may need to adjust this based on your requirements
 
-    for ($i = 1; $i <= 9; $i++) {
-        $validator = \Validator::make($request->all(), $this->makeValidationRules($i, $request));
+        // Calculate the first occurrence of the selected day in the given month
+        $firstDayOfMonth = Carbon::createFromDate($year, $lessonMonth, 1);
+        $lessonDate = $firstDayOfMonth->startOfWeek()->addDays($lessonDay - 1);
+        $errors = [
+            'common' => [],
+        ];
+        $class = ClassTable::find($selectedClassId);
+        while ($lessonDate->month == $lessonMonth)
+        {
+            for ($i = 1; $i <= 9; $i++)
+            {
+                    $validator = \Validator::make($request->all(), $this->makeValidationRules($i, $request));
 
-        // Проверка наличия преподавателя
-        $fullName = $request->input("teacher_name_$i");
-        $classFull = $request->input("class_name_$i");
+                    // Проверка наличия преподавателя
+                    $fullName = $request->input("teacher_name_$i");
 
-        // Проверка наличия пробела перед использованием explode
-        if (!empty($fullName) && strpos($fullName, ' ') !== false) {
-            list($firstName, $lastName) = explode(' ', $fullName, 2);
+                    // Проверка наличия пробела перед использованием explode
+                    if (!empty($fullName) && strpos($fullName, ' ') !== false) {
+                        list($firstName, $lastName) = explode(' ', $fullName, 2);
 
-            $teacher = Teacher::where('name', $firstName)
-                            ->where('Surname', $lastName)
-                            ->first();
+                        $teacher = Teacher::where('name', $firstName)
+                                        ->where('Surname', $lastName)
+                                        ->first();
 
-            if (!$teacher) {
-                $errors['common'][] = "Teacher not found for row $i";
-            }
-        } elseif (!empty($fullName)) {
-            $errors['common'][] = "Invalid format for teacher name in row $i";
-        }
+                        if (!$teacher) {
+                            $errors['common'][] = "Teacher not found for row $i";
+                        }
+                    } elseif (!empty($fullName)) {
+                        $errors['common'][] = "Invalid format for teacher name in row $i";
+                    }
 
-        // Проверка наличия пробела перед использованием explode для названия класса
-        if (!empty($classFull) && strpos($classFull, ' ') !== false) {
-            list($classGrade, $className) = explode(' ', $classFull, 2);
-
-            $class = ClassTable::where('grade', $classGrade)
-                            ->where('ClassName', $className)
-                            ->first();
-
-            if (!$class) {
-                $errors['common'][] = "Class not found for row $i";
-            }
-        } elseif (!empty($classFull)) {
-            $errors['common'][] = "Invalid format for class name in row $i";
-        }
-    }
-
-    if (empty($errors['common'])) {
-        for ($i = 1; $i <= 9; $i++) {
-            // Проверка наличия преподавателя
-            $fullName = $request->input("teacher_name_$i");
-            if (!empty($fullName)) {
-                $lesson = Lesson::updateOrCreate(
-                    [
-                        'LessonDate' => $lessonDate,
-                        'LessonNumber' => $i,
-                    ],
-                    [
-                        'TeacherId' => $teacher->id,
-                        'classId' => $class->id,
-                        'classroom' => $request->input("classroom_$i"),
-                    ]
-                );
-
-                // Создание расписания на 4 недели
-                for ($week = 0; $week < 4; $week++) {
-                    $lesson->replicate()->update([
-                        'LessonDate' => \Carbon\Carbon::parse($lessonDate)->addWeeks($week + 1),
-                        'LessonNumber' => $i,
-                    ]);
+                    // Проверка наличия пробела перед использованием explode для названия класса
+                    if (empty($errors['common'])) {
+                        
+                            $fullName = $request->input("teacher_name_$i");
+                            if (!empty($fullName)) {
+                                $existingLesson = Lesson::where('LessonDate', $lessonDate)
+                                    ->where('LessonNumber', $i)
+                                    ->whereHas('class', function ($query) use ($class) {
+                                        $query->where('id', $class->id);
+                                    })
+                                    ->first();
+                                
+                                    if ($existingLesson) {
+                                        // Обновление существующего урока
+                                        $existingLesson->update([
+                                            'classroom' => $request->input("classroom_$i"),
+                                        ]);
+                                    } else {
+                                        // Создание нового урока
+                                        if (!empty($teacher) && !empty($class)) {
+                                            Lesson::create([
+                                                'LessonDate' => $lessonDate,
+                                                'LessonNumber' => $i,
+                                                'TeacherId' => $teacher->id,
+                                                'classId' => $class->id,
+                                                'classroom' => $request->input("classroom_$i"),
+                                            ]);
+                                        }
+                                    }  
+                            }
+                        
+                    }
                 }
-            }
-        }
+                
+                $lessonDate->addWeek();
 
-        return redirect()->back();
+            }
+        return redirect()->back()->withErrors($errors)->withInput();
     }
 
-    return redirect()->back()->withErrors($errors)->withInput();
-}
 
-    public function createSubjects(Request $request)
+
+public function createSubjects(Request $request)
     {
         $subject = new Subject();
         $subject->name = $request->input('name'); 
         $subject->save(); 
 
         return redirect()->back();
-    }
+}
     public function createClass(Request $request)
     {
         

@@ -30,16 +30,18 @@
 
 <section class="newShow">
     <h2>News</h2>
-    <div class="news-slider">
+    <div class="news-slider-container" id="newsSliderContainer">
+    <div class="news-slider" id="newsSlider">
         @foreach($newsList as $news)
-            <div class="news-item">
-                <h2>{{ $news->title }}</h2>
+            <div class="news">
+                <h3>{{ $news->title }}</h3>
                 <p>{{ $news->description }}</p>
-                <img src="{{ asset('storage/' . $news->PictureFilePath) }}" alt="{{ $news->title }}">
+                <p>{{ $news->date }}</p>
+                <img class="news-image" src="{{ Storage::url($news->PictureFilePath) }}" alt="{{ $news->title }}">
             </div>
         @endforeach
     </div>
-</section>
+</div>
         <section class="new-task">
            
         <h2>Teacher Lessons</h2>
@@ -63,4 +65,31 @@
         </table>
         </section>
     </main>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const newsSliderContainer = document.getElementById('newsSliderContainer');
+  const newsSlider = document.getElementById('newsSlider');
+
+  let isScrolling = false;
+
+  function scrollNews() {
+    if (isScrolling) {
+      const firstNews = newsSlider.firstElementChild;
+      newsSlider.removeChild(firstNews);
+      newsSlider.appendChild(firstNews);
+      newsSlider.style.transform = 'translateY(0)';
+      isScrolling = false;
+    }
+  }
+
+  // Добавляем обработчик события при скроллинге
+  newsSliderContainer.addEventListener('wheel', function() {
+    isScrolling = true;
+    scrollNews();
+  });
+
+  // Или используйте следующую строку, чтобы прокручивать новости через определенное время
+  // setInterval(scrollNews, 3000);
+});
+</script>
     @endsection

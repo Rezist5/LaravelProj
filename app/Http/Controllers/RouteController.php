@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
 use App\Student;
+use App\Teacher;
 use App\ClassTable;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class RouteController extends Controller
         $markcontroller = new MarkController();
         if($userType == 'student')
         {
-            $stud = Student::where('Id', Auth::user()->UserId)->first();
+            $stud = Student::find(Auth::user()->UserId);
             $marks = $markcontroller->getLastMarks();
             $top3Tasks = $taskController->getTop3Tasks($stud->ClassId);
            
@@ -34,7 +35,11 @@ class RouteController extends Controller
             $Tasks = $taskController->getUnverifiedTasks();
             return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons, 'Tasks' => $Tasks, 'newsList' => $news ]);
         }
-        return view('index', ['today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons]);
+        else if($userType == 'admin')
+        {
+            $classes = ClassTable::all();
+            return view('index', ['classes' => $classes,'today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons]);
+        }
     }
     public function StudentTasks()
     {              
@@ -43,7 +48,7 @@ class RouteController extends Controller
         $todayLessons = $scheduleController->getLessonsForToday();
         $today = now()->toDateString(); 
         $userType = Auth::user()->UserType;
-        $stud = Student::where('Id', Auth::user()->UserId)->first();
+        $stud = Student::find(Auth::user()->UserId);
         $Tasks = $taskController->getAllTasks($stud->ClassId);
         return view('StudentTasks', ['today'=> $today ,'tasks' => $Tasks, 'userType' => $userType]);
         
@@ -52,7 +57,7 @@ class RouteController extends Controller
     {              
         $taskController = new TaskController();
         $userType = Auth::user()->UserType;
-        $teach = Teacher::where('Id', Auth::user()->UserId)->first();
+        $teach = Teacher::find(Auth::user()->UserId)->first();
         $Tasks = $taskController->getAllUnverifiedTasks();
         return view('TeacherTasks   ', ['tasks' => $Tasks, 'userType' => $userType ]);
         

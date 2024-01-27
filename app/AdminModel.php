@@ -1,10 +1,11 @@
 <?php
 
 namespace App;
+use App\User;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AdminModel extends Model
+class AdminModel extends User
 {
     protected $table = 'admin'; 
 

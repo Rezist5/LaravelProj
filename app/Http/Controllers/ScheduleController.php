@@ -29,7 +29,8 @@ class ScheduleController extends Controller
         }
 
             if ($currentUser->UserType === 'student') {
-                $student = Student::where('Id', $currentUser->UserId)->first();
+                
+                $student = Student::find($currentUser->UserId);
                 if ($student) {
                     $lessons = Lesson::where('classId', $student->ClassId)
                         ->where('LessonDate', $date)
@@ -38,7 +39,7 @@ class ScheduleController extends Controller
                         return view('studentLessons', ['lessons' => $lessons,  'today' => now()->toDateString(),'selectedDate' => $date, 'userType' => $currentUser->UserType]);
                 }
             } elseif ($currentUser->UserType === 'teacher') {
-                $teacher = Teacher::where('Id', $currentUser->UserId)->first();
+                $teacher = Teacher::find($currentUser->UserId);
                 
                 if ($teacher) {
                     $lessons = Lesson::where('TeacherId', $currentUser->UserId)
@@ -82,7 +83,7 @@ class ScheduleController extends Controller
         else if($currentUser->UserType == "teacher")
         {
 
-            $teacher = Teacher::where('Id', $currentUser->UserId)->first();
+            $teacher = Teacher::find($currentUser->UserId);
             $today = now()->toDateString(); 
             
             $lessons = Lesson::where('TeacherId', $currentUser->UserId)

@@ -4,8 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Subject;
+use App\User;
 
-class Teacher extends Model
+class Teacher extends User
 {
     protected $table = 'teacher'; // Указываем имя таблицы, если оно отличается от стандартного формата Laravel
 

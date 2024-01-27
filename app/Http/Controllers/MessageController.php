@@ -30,22 +30,24 @@ class MessageController extends Controller
 
     public function startChat(Request $request)
     {
-        $request->validate([
-            'abonent_1' => 'required',
-            'abonent_2' => 'required',
-        ]);
-
-        $existingChat = Chat::where('abonent_1', $request->input('abonent_1'))
-            ->where('abonent_2', $request->input('abonent_2'))
-            ->first();
-
+        $curUser = Auth::user();
+        
+        $abonentId = $request->input('newChatRecipient');
+        $abonentUser = User::where('UserId', $abonentId)->first();
+        $existingChat = Chat::where(function ($query) use ($abonentId) {
+            $curUser = Auth::user();
+            $abonentUser = User::where('UserId', $abonentId)->first();
+            $query->where('abonent_1', $curUser->id)->where('abonent_2', $abonentUser->id)
+                ->orWhere('abonent_1', $abonentUser->Id)->where('abonent_2', $curUser->Id);
+        })->first();
         if ($existingChat) {
-            return response()->json(['message' => 'Chat already exists', 'data' => $existingChat]);
+            // Если чат уже существует, возвращаем сообщение об этом
+            return redirect()->back()->with('message', 'Chat with this user already exists');
         }
-
-        $chat = Chat::create([
-            'abonent_1' => $request->input('abonent_1'),
-            'abonent_2' => $request->input('abonent_2'),
+        // Создаем новый чат
+        $newChat = Chat::create([
+            'abonent_1' =>  $curUser->id,
+            'abonent_2' => $abonentUser->id,
         ]);
 
         return response()->json(['message' => 'Chat started successfully', 'data' => $chat]);

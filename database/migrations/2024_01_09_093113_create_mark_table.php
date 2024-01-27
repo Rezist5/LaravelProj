@@ -17,6 +17,7 @@ class CreateMarkTable extends Migration
             $table->id();
             $table->unsignedInteger('MarkNumber');
             $table->date('MarkDate');
+            $table->unsignedInteger('MaxMarkNumber')->default(10);
             $table->foreignId('TaskId');
             $table->foreignId('StudentId');
 

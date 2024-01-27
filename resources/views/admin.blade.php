@@ -4,12 +4,34 @@
     <h2>Create Schedule</h2>
     <form action="{{ route('create.lessons') }}" method="POST">
         @csrf
-        <input type="date" name="lesson_date" required>
+        <label for="lesson_day">Select Day of the Week:</label>
+        <select name="lesson_day" id="lesson_day" required>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <!-- Add more options for other days if needed -->
+        </select>
+
+        <label for="lesson_month">Select Month:</label>
+        <select name="lesson_month" id="lesson_month" required>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <!-- Add more options for other months if needed -->
+        </select>
+        <label for="selected_class">Select Class:</label>
+        <select name="selected_class" id="selected_class" required>
+            <!-- Populate options based on your class data -->
+            @foreach($classes as $class)
+                <option value="{{ $class->id }}">{{ $class->grade }} {{ $class->ClassName }}</option>
+            @endforeach
+        </select>
         <table>
             <thead>
                 <tr>
-                    <th>Teacher full name</th>
-                    <th>Class Name</th>
+                    <th>Teacher full name</th>                  
                     <th>Classroom</th>
                 </tr>
             </thead>
@@ -21,13 +43,7 @@
                         @error("teacher_name_$i")
                             <span class="error">{{ $message }}</span>
                         @enderror
-                    </td>
-                    <td>
-                        <input type="text" name="class_name_{{ $i }}" >
-                        @error("class_id_$i")
-                            <span class="error">{{ $message }}</span>
-                        @enderror
-                    </td>
+                    </td>                   
                     <td>
                         <input type="text" name="classroom_{{ $i }}" >
                         @error("classroom_$i")
@@ -85,14 +101,14 @@
     <button type="submit" class="btn btn-primary">Создать предмет</button>
 </form>
 </section>
-<section class="ClassCreate">
+<section class="ClassCreate">  
 <h2>Create New Class</h2>
 <form method="POST" action="{{ route('class.create') }}">
     @csrf
     <label for="name">Название класса:</label>
     <input type="text" id="name" name="name" required>
     <label for="name">Класс:</label>
-    <input type="number" step="1" id="grade" name="grade" required>
+    <input type="number" step="1" min="1" max="12" id="grade" name="grade" required>
     <button type="submit" class="btn btn-primary">Создать класс</button>
 </form>
 </section>

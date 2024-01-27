@@ -2,6 +2,7 @@
 
 namespace App;
 use App\ClassTable;
+use App\User;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,7 +26,10 @@ class Student extends Model
     {   
         return self::create($data);
     }
-
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id', 'UserId');
+    }
     public static function createStudent($data)
     {
         return self::create($data);

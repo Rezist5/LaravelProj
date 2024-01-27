@@ -122,27 +122,9 @@ class ChatPageController extends Controller
     }
     public function startChat(Request $request)
     {
-        $curUser = Auth::user();
         
-        $abonentId = $request->input('newChatRecipient');
-        $abonentUser = User::where('UserId', $abonentId)->first();
-        $existingChat = Chat::where(function ($query) use ($abonentId) {
-            $curUser = Auth::user();
-            $abonentUser = User::where('UserId', $abonentId)->first();
-            $query->where('abonent_1', $curUser->id)->where('abonent_2', $abonentUser->id)
-                ->orWhere('abonent_1', $abonentUser->Id)->where('abonent_2', $curUser->Id);
-        })->first();
-        if ($existingChat) {
-            // Если чат уже существует, возвращаем сообщение об этом
-            return redirect()->back()->with('message', 'Chat with this user already exists');
-        }
-        // Создаем новый чат
-        $newChat = Chat::create([
-            'abonent_1' =>  $curUser->id,
-            'abonent_2' => $abonentUser->id,
-        ]);
-
-        // Возможно, здесь вы захотите выполнить дополнительные действия, например, отправить уведомление
+        $messagecontorller = new MessageController();
+        $message = $messagecontorller->startChat($request);
 
         return redirect()->back()->with('message', 'Chat started successfully');
     }

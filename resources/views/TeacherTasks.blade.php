@@ -2,7 +2,7 @@
 @include('header')
 @section('main_content')
 <h2>Not Verified</h2>
-@foreach($Tasks as $solTask)
+@foreach($tasks as $solTask)
     <div class="task-item">
         <p>{{ $solTask->student->name }} {{ $solTask->student->name }}</p>
         <div class="task-actions">
