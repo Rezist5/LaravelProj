@@ -1,26 +1,17 @@
 <?php
 
-
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
-use App\TaskModel;
-use App\Teacher;
-use App\Lesson;
-use App\Student;
-use App\Mark;
-use App\SolutionTaskModel;
-use App\Http\Controllers\TaskInterface;
+use Illuminate\Http\Request;
 
-
-class TaskController extends Controller implements TaskInterface
+class ExamController extends Controller implements TaskInterface
 {
 
     public function getTop3Tasks($classId)
     {
         $studId = Auth::user()->UserId;
-        $tasksWithoutSolutions = TaskModel::whereDoesntHave('solution', function ($query) use ($studId) {
+        $tasksWithoutSolutions = ExamModel::whereDoesntHave('solution', function ($query) use ($studId) {
             $query->where('StudentId', $studId);
         })
         ->limit(3)
@@ -30,9 +21,9 @@ class TaskController extends Controller implements TaskInterface
     public function getUnverifiedTasks()
     {
         $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
-        $Tasks = TaskModel::where('subjectId', $teacher->subjectId)->get();
+        $Tasks = ExamModel::where('subjectId', $teacher->subjectId)->get();
         $taskIds = $Tasks->pluck('Id');
-        $SolTasks = SolutionTaskModel::whereIn('TaskId', $taskIds)
+        $SolTasks = SolutionExamModel::whereIn('ExamId', $taskIds)
                             ->where('verified', False)
                             ->take(5)
                             ->get();    
@@ -41,21 +32,21 @@ class TaskController extends Controller implements TaskInterface
     public function getAllUnverifiedTasks()
     {
         $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
-        $Tasks = TaskModel::where('subjectId', $teacher->subjectId)->get();
+        $Tasks = ExamModel::where('subjectId', $teacher->subjectId)->get();
         $taskIds = $Tasks->pluck('Id');
-        $SolTasks = SolutionTaskModel::whereIn('TaskId', $taskIds)
+        $SolTasks = SolutionExamModel::whereIn('ExamId', $taskIds)
                             ->where('verified', False)
                             ->get();    
         return $SolTasks;
     }
     public function getAllTasks($classId)
     {
-        $Tasks = TaskModel::where('classId', $classId)->orderBy('deadline', 'desc')
+        $Tasks = ExamModel::where('classId', $classId)->orderBy('date', 'desc')
             ->get();
 
         $taskIds = $Tasks->pluck('id');
 
-        $solutions = SolutionTaskModel::whereIn('taskId', $taskIds)->get();
+        $solutions = SolutionExamModel::whereIn('taskId', $taskIds)->get();
 
         return $solutions;
     }
@@ -69,33 +60,35 @@ class TaskController extends Controller implements TaskInterface
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('task_files', $fileName);
 
-                $taskCheck = TaskModel::where('lessonId', $request->lessonId)->first();
-                if($taskCheck)
-                {
-                    $taskCheck->taskFilePath = $filePath;
-                    $task->save();
-                    return redirect()->back();
-                }
-                else
-                {
-                    $task = new TaskModel();
-                    $task->lessonId = $request->lessonId; 
-                    $task->subjectId = $teacher->SubjectID;
-                    $task->classId = $request->classId; 
-                    $task->taskFilePath = $filePath;
-                    $task->deadline = $request->deadline;
-                    $task->save();
+                
+                $task = new ExamModel();
+                $task->lessonId = $request->lessonId; 
+                $task->subjectId = $teacher->SubjectID;
+                $task->classId = $request->classId; 
+                $task->taskFilePath = $filePath;
+                $task->deadline = $request->deadline;
+                $task->save();
     
-                    return redirect()->back();
-                }      
+                return redirect()->back();
+                    
             } 
             else {
                 return redirect()->back();
             }
         }
+        public function openTask(Request $request)
+        {
+            
+                $exam = ExamModel::find($request->taskId);
+                $exam->opened = true;
+                $timer = date('H:i:s', strtotime('+1 hour', strtotime($exam->duration)));
+                $exam->save();
+                
+                return redirect()->back()->with('timer', $timer);
+        }
     public function downloadTaskFile(Request $request)
     {
-        $task = TaskModel::find($request->taskId);
+        $task = ExamModel::find($request->taskId);
         $filePath = $task->TaskfilePath;
         
         $file = storage_path('app/' .$filePath);
@@ -108,29 +101,36 @@ class TaskController extends Controller implements TaskInterface
                 $file = $request->file('file');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('solution_files', $fileName);
-                $taskId = $request->taskId;
-                $solTaskCheck = SolutionTaskModel::where('TaskId', $request->taskId)->where('StudentId', Auth::user()->UserId)->first();
-                if($solTaskCheck)
-                {
-                    $solTaskCheck->SolutionFilePath = $filePath;
-                    $solTaskCheck->save();
-                    return redirect()->back();
+                $taskId = $request->examId;
+                $opened = ExamModel::find($request->examId)->first()->opened;
+                if($opened)
+                {              
+                    $solTaskCheck = SolutionExamModel::where('ExamId', $request->examId)->where('StudentId', Auth::user()->UserId)->first();
+                    if($solTaskCheck)
+                    {
+                        $solTaskCheck->SolutionFilePath = $filePath;
+                        $solTaskCheck->save();
+                        return redirect()->back();
+                    }
+                    else
+                    {
+                        
+
+                        $task = new SolutionExamModel();
+                        $task->TaskId = $taskId;
+                        $task->SolutionfilePath = $filePath; 
+                        $task->StudentId = Auth::user()->UserId; 
+                        $task->downloaded = true; 
+                        
+                        $task->save();
+        
+                        return redirect()->back();
+                    }
                 }
                 else
                 {
-                    
-
-                    $task = new SolutionTaskModel();
-                    $task->TaskId = $taskId;
-                    $task->SolutionfilePath = $filePath; 
-                    $task->StudentId = Auth::user()->UserId; 
-                    $task->downloaded = true; 
-                    
-                    $task->save();
-    
-                    return redirect()->back();
+                    return redirect()->back()->withErrors(['message' => 'Exam finished already.']);
                 }
-               
             } else {
                 return redirect()->back();
             }
@@ -138,10 +138,10 @@ class TaskController extends Controller implements TaskInterface
         public function downloadSolutionFile(Request $request)
         {
             $studId = $request->StudentId;
-            $lessonId = $request->lessonId;
+            $examId = $request->examId;
             
-            $task = TaskModel::where('lessonId', $lessonId)->first();
-            $SolTask = SolutionTaskModel::where('StudentId', $studId)
+            $task = ExamModel::where('Id', $examId)->first();
+            $SolTask = SolutionExamModel::where('StudentId', $studId)
             ->where('TaskId', $task->id)
             ->first();
                     
@@ -157,5 +157,4 @@ class TaskController extends Controller implements TaskInterface
         
             return response()->download($file);
         }
-    
 }

@@ -13,16 +13,38 @@ use App\Lesson;
 
 class ChatPageController extends Controller
 {
-    public function showChatPage($teacherId = 0)
+    public function showChatPage($recepientId = 0)
     {
+        
         $curUser = Auth::user();
         $userChats = Chat::where('abonent_1', $curUser->id)
             ->orWhere('abonent_2', $curUser->id)
             ->get();
-        
-        if($teacherId == 0)
+        if($userChats->count() == 0){
+                $recepient = null;
+                
+                $messages = null;
+                $selectedChat = null;
+                $userClassId = Student::where('Id', $curUser->UserId)->first()->ClassId;
+                $recepients = Teacher::whereHas('lessons', function ($query) use ($userClassId) {
+                    $query->where('classId', $userClassId);
+                })->get();
+                $recepientsChange = [];
+                return view('chat', [
+                    'recepient' => $recepient,
+                    'teachersChange' => $recepientsChange,
+                    'currentUser' => $curUser,
+                    'userType' => $curUser->UserType,
+                    'teachers' => $recepients,
+                    'userChats' => $userChats,
+                    'selectedChat' => $selectedChat,
+                    'messages' => $messages,
+                ]);
+            }
+        if($recepientId == 0)
         {
             $selectedChat = $userChats->first();
+            
             if($selectedChat->abonent_1 == $curUser->id)
             {
                 $recepient = User::find($selectedChat->abonent_2);
@@ -31,11 +53,16 @@ class ChatPageController extends Controller
             {
                 $recepient = User::find($selectedChat->abonent_1);
             }
+            
         }
         else
         {
-            //находим selectedChat по $teacherId
-            $TeachUser = User::where('UserId', $teacherId)->first();
+            if($curUser->UserType == 'teacher')
+            {
+                
+            }
+            //находим selectedChat по $recepientId\
+            $TeachUser = User::where('UserId', $recepientId)->first();
             $TeachUserId = $TeachUser->id;
 
             $recepient = $TeachUser;
@@ -50,11 +77,11 @@ class ChatPageController extends Controller
         }
         if($curUser->UserType == 'teacher') {
             $userClass = Teacher::where('Id', $curUser->UserId)->first();
-            $teachers = $userClass->getStudents();
+            $recepients = $userClass->getStudents();
         }
         if($curUser->UserType == 'student') {
             $userClassId = Student::where('Id', $curUser->UserId)->first()->ClassId;
-            $teachers = Teacher::whereHas('lessons', function ($query) use ($userClassId) {
+            $recepients = Teacher::whereHas('lessons', function ($query) use ($userClassId) {
                 $query->where('classId', $userClassId);
             })->get();  
         }
@@ -75,38 +102,38 @@ class ChatPageController extends Controller
             $userTempIds = User::whereIn('id', $teacherIds);
             if($curUser->UserType == 'teacher')
             {
-                $teachersChange = Student::whereIn('Id', $userTempIds->pluck('UserId'))->get();
+                $recepientsChange = Student::whereIn('Id', $userTempIds->pluck('UserId'))->get();
             
             }
             else if($curUser->UserType == 'student')
             {
-                $teachersChange = Teacher::whereIn('Id', $userTempIds->pluck('UserId'))->get();
+                $recepientsChange = Teacher::whereIn('Id', $userTempIds->pluck('UserId'))->get();
             }
         }   
         else
         {
             $allChats = Chat::where('abonent_2', $curUser->id)->get();
             $teacherIds = $allChats->pluck('abonent_1')->unique();
+            
             $messages = Message::where('chat_id', $selectedChat->id)->get();
             $userTempIds = User::whereIn('id', $teacherIds);
             if($curUser->UserType == 'teacher')
             {
-                $teachersChange = Student::whereIn('Id', $userTempIds->pluck('UserId'))->get();
+                $recepientsChange = Student::whereIn('Id', $userTempIds->pluck('UserId'))->get();
             
             }
             else if($curUser->UserType == 'student')
             {
-                $teachersChange = Teacher::whereIn('Id', $userTempIds->pluck('UserId'))->get();
+                $recepientsChange = Teacher::whereIn('Id', $userTempIds->pluck('UserId'))->get();
             }
             
         }
-        //dd($selectedChat->id);
         return view('chat', [
             'recepient' => $recepient,
-            'teachersChange' => $teachersChange,
+            'teachersChange' => $recepientsChange,
             'currentUser' => $curUser,
             'userType' => $curUser->UserType,
-            'teachers' => $teachers,
+            'teachers' => $recepients,
             'userChats' => $userChats,
             'selectedChat' => $selectedChat,
             'messages' => $messages,
@@ -125,7 +152,17 @@ class ChatPageController extends Controller
         $curUser = Auth::user();
         
         $abonentId = $request->input('newChatRecipient');
-        $abonentUser = User::where('UserId', $abonentId)->first();
+        if($curUser->usertype = 'student')
+        {
+
+            $abonentUser = User::where('UserId', $abonentId)->where('UserType', 'teacher')->first();
+           
+        }
+        else
+        {
+            $abonentUser = User::where('UserId', $abonentId)->where('UserType', 'student')->first();
+
+        }
         $existingChat = Chat::where(function ($query) use ($abonentId) {
             $curUser = Auth::user();
             $abonentUser = User::where('UserId', $abonentId)->first();
@@ -142,7 +179,6 @@ class ChatPageController extends Controller
             'abonent_2' => $abonentUser->id,
         ]);
 
-        // Возможно, здесь вы захотите выполнить дополнительные действия, например, отправить уведомление
 
         return redirect()->back()->with('message', 'Chat started successfully');
     }
