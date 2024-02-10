@@ -10,6 +10,7 @@ use App\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Lesson;
+use Rdkafka\Conf;
 
 class ChatPageController extends Controller
 {

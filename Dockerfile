@@ -11,9 +11,7 @@ RUN pecl install rdkafka && \
     docker-php-ext-enable rdkafka
 
 # Копирование PHP-конфигурационного файла
-COPY php.ini /usr/local/etc/php/
 
 # Установка Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html

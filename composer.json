@@ -14,8 +14,7 @@
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
         "laravel/framework": "^7.29",
         "laravel/tinker": "^2.5",
-        "edenhill/librdkafka": "^2.2",
-        "phprdkafka/php-rdkafka": "^6.0"
+        "enqueue/rdkafka": "^0.10.15"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
@@ -48,8 +47,8 @@
             "Tests\\": "tests/"
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "prefer-stable": false,
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

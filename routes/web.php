@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MarkController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ChatPageController;
+use App\Http\Controllers\KafkaController;
 
 Route::get('/', [RouteController::class, 'index'])->middleware('auth');
 Route::get('/lessons', [RouteController::class, 'lessons'])->middleware('auth');
@@ -46,5 +47,8 @@ Route::post('/createClass', [AdminController::class, 'createClass'])->name('clas
 
 Route::post('/start-chat', [ChatPageController::class, 'startChat'])->name('start-chat');
 Route::post('/send-message', [ChatPageController::class, 'sendChatMessage'])->name('send-message');
+
+Route::get('/produce-message', [KafkaController::class, 'produceMessage']);
+Route::get('/consume-message', [KafkaController::class, 'consumeMessage']);
 
 
