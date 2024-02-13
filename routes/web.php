@@ -51,4 +51,5 @@ Route::post('/send-message', [ChatPageController::class, 'sendChatMessage'])->na
 Route::get('/produce-message', [KafkaController::class, 'produceMessage']);
 Route::get('/consume-message', [KafkaController::class, 'consumeMessage']);
 
+Route::post('/create-exam', [ExamController::class, 'createExam'])->name('create.exam');
 

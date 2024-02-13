@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSolutionControlTaskModelsTable extends Migration
+class CreateSolutionExamModelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,17 @@ class CreateSolutionControlTaskModelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('solution_control_task_models', function (Blueprint $table) {
+        Schema::create('SolutionExam', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('ExamId');
+            $table->foreignId('StudentId');
+            $table->string('SolutionFilePath');
+            $table->boolean('verified')->default(false);
+            $table->boolean('downloaded')->default(false);
+            
+           
+            $table->foreign('ExamId')->references('id')->on('Exam');
+            $table->foreign('StudentId')->references('id')->on('Student');
         });
     }
 
@@ -26,6 +34,6 @@ class CreateSolutionControlTaskModelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('solution_control_task_models');
+        Schema::dropIfExists('SolutionExam');
     }
 }

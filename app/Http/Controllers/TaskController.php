@@ -11,13 +11,8 @@ use App\Lesson;
 use App\Student;
 use App\SolutionTaskModel;
 
-class TaskController extends Controller
+class TaskController extends Controller implements TaskInterface
 {
-    public function createTaskForm($lessonId)
-    {
-        $lesson = Lesson::find($lessonId);
-        return view('createTask', ['lesson' => $lesson]);
-    }
     public function getTop3Tasks($classId)
     {
         $studId = Auth::user()->UserId;
