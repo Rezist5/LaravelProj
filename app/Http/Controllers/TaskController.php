@@ -13,6 +13,35 @@ use App\SolutionTaskModel;
 
 class TaskController extends Controller implements TaskInterface
 {
+    public function loadTasks(Request $request)
+{
+    try {
+        $subject = $request->get('subject');
+        $date = $request->get('date');
+
+        $tasks = TaskModel::query();
+
+        if ($subject) {
+            $tasks->where('subjectId', $subject);
+        }
+
+        if ($date) {
+            $tasks->whereDate('startDate', $date);
+        }
+
+        $filteredTasks = $tasks->get();
+
+        // Здесь можете добавить дополнительную логику, если необходимо
+        
+        return view('taskTable', [
+            'tasks' => $filteredTasks,
+        ]);
+    } catch (\Exception $e) {
+       echo "Error: " . $e->getMessage();
+       return 0;
+    }
+}
+    
     public function getTop3Tasks($classId)
     {
         $studId = Auth::user()->UserId;
@@ -37,11 +66,12 @@ class TaskController extends Controller implements TaskInterface
     public function getAllUnverifiedTasks()
     {
         $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
-        $Tasks = TaskModel::where('subjectId', $teacher->subjectId)->get();
-        $taskIds = $Tasks->pluck('Id');
+        $Tasks = TaskModel::where('subjectId', $teacher->SubjectID)->get();
+        $taskIds = $Tasks->pluck('id');
         $SolTasks = SolutionTaskModel::whereIn('TaskId', $taskIds)
                             ->where('verified', False)
-                            ->get();    
+                            ->get();  
+        //dd($taskIds);  
         return $SolTasks;
     }
     public function getAllTasks($classId)
@@ -53,7 +83,7 @@ class TaskController extends Controller implements TaskInterface
 
         $solutions = SolutionTaskModel::whereIn('taskId', $taskIds)->get();
 
-        return $solutions;
+        return $Tasks;
     }
     // Действие для загрузки заданий учителями
         public function uploadTaskFile(Request $request)

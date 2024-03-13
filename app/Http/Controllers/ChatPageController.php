@@ -14,14 +14,14 @@ use Rdkafka\Conf;
 
 class ChatPageController extends Controller
 {
-    public function showChatPage($teacherId = 0)
+    public function showChatPage($recepientId = 0)
     {
         $curUser = Auth::user();
         $userChats = Chat::where('abonent_1', $curUser->id)
             ->orWhere('abonent_2', $curUser->id)
             ->get();
         
-        if($teacherId == 0)
+        if($recepientId == 0)
         {
             $selectedChat = $userChats->first();
             if($selectedChat->abonent_1 == $curUser->id)
@@ -35,8 +35,8 @@ class ChatPageController extends Controller
         }
         else
         {
-            //находим selectedChat по $teacherId
-            $TeachUser = User::where('UserId', $teacherId)->first();
+            //находим selectedChat по $recepientId
+            $TeachUser = User::where('UserId', $recepientId)->first();
             $TeachUserId = $TeachUser->id;
 
             $recepient = $TeachUser;
@@ -63,7 +63,7 @@ class ChatPageController extends Controller
         
         if($allChats->count() > 0)
         {         
-            $teacherIds = $allChats->pluck('abonent_2')->unique();
+            $recepientIds = $allChats->pluck('abonent_2')->unique();
             if($selectedChat)
             {
                 $messages = Message::where('chat_id', $selectedChat->id)->get();
@@ -73,7 +73,7 @@ class ChatPageController extends Controller
 
                 $messages = [];
             }
-            $userTempIds = User::whereIn('id', $teacherIds);
+            $userTempIds = User::whereIn('id', $recepientIds);
             if($curUser->UserType == 'teacher')
             {
                 $teachersChange = Student::whereIn('Id', $userTempIds->pluck('UserId'))->get();
@@ -87,9 +87,9 @@ class ChatPageController extends Controller
         else
         {
             $allChats = Chat::where('abonent_2', $curUser->id)->get();
-            $teacherIds = $allChats->pluck('abonent_1')->unique();
+            $recepientIds = $allChats->pluck('abonent_1')->unique();
             $messages = Message::where('chat_id', $selectedChat->id)->get();
-            $userTempIds = User::whereIn('id', $teacherIds);
+            $userTempIds = User::whereIn('id', $recepientIds);
             if($curUser->UserType == 'teacher')
             {
                 $teachersChange = Student::whereIn('Id', $userTempIds->pluck('UserId'))->get();
@@ -117,7 +117,7 @@ class ChatPageController extends Controller
     {
         $selectedChat = $request->input('chat_id');
         $messagecontorller = new MessageController();
-        $message = $messagecontorller->sendMessage($request);
+        //$message = $messagecontorller->sendMessage($request);
 
         return ChatPageController::showChatPage($selectedChat);
     }
@@ -129,13 +129,13 @@ class ChatPageController extends Controller
 
         return redirect()->back()->with('message', 'Chat started successfully');
     }
-    // public function changeChat($teacherId = 0)
+    // public function changeChat($recepientId = 0)
     // {
     //     //ПЕРЕДЕЛАТЬ
-    //     $selectedChat = Chat::where(function ($query) use ($teacherId) {
+    //     $selectedChat = Chat::where(function ($query) use ($recepientId) {
     //         $curUserId = Auth::user()->id;
-    //         $query->where('abonent_1', $curUserId)->where('abonent_2', $teacherId)
-    //             ->orWhere('abonent_1', $teacherId)->where('abonent_2', $curUserId);
+    //         $query->where('abonent_1', $curUserId)->where('abonent_2', $recepientId)
+    //             ->orWhere('abonent_1', $recepientId)->where('abonent_2', $curUserId);
     //     })->first();
     //     $messages = ($selectedChat) ? Message::where('chat_id', $selectedChat->id)->get() : [];
     //     Log::info($selectedChat);

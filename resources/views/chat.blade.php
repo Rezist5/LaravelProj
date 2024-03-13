@@ -18,7 +18,7 @@
         <form id="sendChatMessageForm" method="POST" action="{{ route('send-message') }}">
             @csrf
             <input type="hidden" name="chat_id" value="{{ $selectedChat->id }}">
-            <input type="hidden" name="recipient_id" value="{{ $recepient->id }}">
+            <input type="hidden" name="recipient_id" id ="recipient_id" value="{{ $recepient->id }}">
             <label for="chatMessageInput">Your message to {{ $selectedChat->user2->name }}:</label>
             <textarea name="message" id="chatMessageInput" rows="4" cols="50"></textarea>
             <button type="submit">Send Message</button>
@@ -38,6 +38,60 @@
         <button type="submit">Change Chat</button>
     </form>
     <script>
+        const socket = new WebSocket('wss://10.10.10.100:6001'); // Адрес вашего WebSocket сервера
+
+        socket.onopen = function(event) {
+            console.log('WebSocket connection established');
+        };
+        socket.onopen = function(event) {
+            const recepientId = document.getElementById('recipient_id'); // Ваш recepientId
+            socket.send(JSON.stringify({ type: 'recepient_id', recepientId: recepientId }));
+        };
+        socket.onmessage = function(event) {
+            // Обновляем чат после получения нового сообщения
+            updateChatRecive(event.data); // Предполагается, что event.data содержит текст сообщения
+        };
+
+        document.getElementById('sendChatMessageForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Отменяем стандартное поведение формы (перезагрузку страницы)
+
+        const messageInput = document.getElementById('chatMessageInput');
+        const recipientId = document.getElementById('recipient_id');
+        const message = messageInput.value.trim();
+
+        if (message !== '') {
+                sendMessage(message, recipientId); // Отправляем сообщение через WebSocket
+                messageInput.value = ''; // Очищаем поле ввода сообщения после отправки
+            }
+        });
+
+        function sendMessage(message, recipientId) {
+            // Отправляем сообщение через WebSocket
+            const messageData = {
+                type: 'chat_message',
+                message: message,
+                recipient_id: recipientId
+            };
+            socket.send(JSON.stringify(messageData));
+            updateChatSend(message);
+        }
+
+        function updateChatRecive(message) {
+            // Обновляем интерфейс чата с новым сообщением
+            const chatMessages = document.getElementById('ChatMessages');
+            const newMessage = document.createElement('div');
+            newMessage.className = 'other-user-message'; // Предположим, что это сообщение от другого пользователя
+            newMessage.textContent = message; // Вставляем текст сообщения в элемент
+            chatMessages.appendChild(newMessage); // Добавляем новое сообщение к списку сообщений
+        }
+        function updateChatSend(message) {
+            // Обновляем интерфейс чата с новым сообщением
+            const chatMessages = document.getElementById('ChatMessages');
+            const newMessage = document.createElement('div');
+            newMessage.className = 'user-message'; // Предположим, что это сообщение от другого пользователя
+            newMessage.textContent = message; // Вставляем текст сообщения в элемент
+            chatMessages.appendChild(newMessage); // Добавляем новое сообщение к списку сообщений
+        }
         function changeChatAction() {
             const teacherId = document.querySelector('#teacherSelect').value;
             const formAction = '{{ route('chat.page', ['teacherId' => ':teacherId']) }}';

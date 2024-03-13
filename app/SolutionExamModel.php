@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SolutionExamModel extends Model
 {
+    protected $table = 'SolutionExam'; 
     protected $fillable = [
         'ExamId',
         'StudentId',

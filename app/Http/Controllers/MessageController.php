@@ -8,24 +8,14 @@ use App\Message;
 
 class MessageController extends Controller
 {
-    public function sendMessage(Request $request)
+    
+    public static function saveMessage($data)
     {
-        $request->validate([
-            'chat_id' => 'required',
-            'recipient_id' => 'required',
-            'message' => 'required',
-        ]);
-        $curUserId = Auth::user()->id;
-        $message = Message::create([
-            'chat_id' => $request->input('chat_id'),
-            'create_time' => now(),
-            'author_id' => $curUserId,
-            'recipient_id' => $request->input('recipient_id'),
-            'message' => $request->input('message'),
-        ]);
-        // Можете вставить здесь логику отправки уведомлений или другие действия
-
-        return response()->json(['message' => 'Message sent successfully', 'data' => $message]);
+        $message = new Message();
+        $message->author_id = $data['author_id']; // Предполагается, что вы отправляете id отправителя
+        $message->recipient_id = $data['recipient_id']; // Предполагается, что вы отправляете id получателя
+        $message->message = $data['message']; // Сохраняем текст сообщения
+        $message->save(); // Сохраняем сообщение в базе данных
     }
 
     public function startChat(Request $request)

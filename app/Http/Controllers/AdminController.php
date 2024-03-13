@@ -40,46 +40,50 @@ class AdminController extends Controller
         // Calculate the first occurrence of the selected day in the given month
         $firstDayOfMonth = Carbon::createFromDate($year, $lessonMonth, 1);
         $lessonDate = $firstDayOfMonth->startOfWeek()->addDays($lessonDay - 1);
+        $lessonDate->setDate($year, $lessonMonth, 1);
         $errors = [
             'common' => [],
         ];
         $class = ClassTable::find($selectedClassId);
+        //dd($lessonDate->month == $lessonMonth);
         while ($lessonDate->month == $lessonMonth)
         {
             for ($i = 1; $i <= 9; $i++)
             {
-                    $validator = \Validator::make($request->all(), $this->makeValidationRules($i, $request));
-
-                    // Проверка наличия преподавателя
-                    $fullName = $request->input("teacher_name_$i");
-
-                    // Проверка наличия пробела перед использованием explode
-                    if (!empty($fullName) && strpos($fullName, ' ') !== false) {
+                $validator = \Validator::make($request->all(), $this->makeValidationRules($i, $request));
+                
+                // Проверка наличия преподавателя
+                $fullName = $request->input("teacher_name_$i");
+                
+                // Проверка наличия пробела перед использованием explode
+                if (!empty($fullName) && strpos($fullName, ' ') !== false) {
                         list($firstName, $lastName) = explode(' ', $fullName, 2);
-
+                        
                         $teacher = Teacher::where('name', $firstName)
-                                        ->where('Surname', $lastName)
-                                        ->first();
-
+                        ->where('Surname', $lastName)
+                        ->first();
+                        
                         if (!$teacher) {
                             $errors['common'][] = "Teacher not found for row $i";
                         }
                     } elseif (!empty($fullName)) {
                         $errors['common'][] = "Invalid format for teacher name in row $i";
                     }
-
+                    
+                    
                     // Проверка наличия пробела перед использованием explode для названия класса
                     if (empty($errors['common'])) {
                         
-                            $fullName = $request->input("teacher_name_$i");
-                            if (!empty($fullName)) {
+                        $fullName = $request->input("teacher_name_$i");
+                        
+                        if (!empty($fullName)) {
                                 $existingLesson = Lesson::where('LessonDate', $lessonDate)
                                     ->where('LessonNumber', $i)
                                     ->whereHas('class', function ($query) use ($class) {
                                         $query->where('id', $class->id);
                                     })
                                     ->first();
-                                
+                                    
                                     if ($existingLesson) {
                                         // Обновление существующего урока
                                         $existingLesson->update([
@@ -109,7 +113,22 @@ class AdminController extends Controller
     }
 
 
+public function getTeachers($subjectId)
+{
+    $teachers = Teacher::where('SubjectID', $subjectId)->get();
 
+    // Формируем массив учителей для отправки в JSON
+    $teachersArray = [];
+    foreach ($teachers as $teacher) {
+        $teachersArray[] = [
+            'id' => $teacher->id,
+            'name' => $teacher->name
+        ];
+    }
+    //dd($teachersArray);
+    // Возвращаем учителей в виде JSON
+    return response()->json(['teachers' => $teachersArray]);
+}
 public function createSubjects(Request $request)
     {
         $subject = new Subject();

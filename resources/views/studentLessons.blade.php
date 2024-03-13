@@ -1,6 +1,7 @@
 @extends('layout')
 @include('header')
 @section('main_content')
+
 <form action="{{ route('lessons.by.date', ['date' => $selectedDate]) }}" method="GET">
     @csrf
     <input type="date" value="{{ $today }}" name="lesson_date" required>

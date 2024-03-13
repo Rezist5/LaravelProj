@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MarkController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ChatPageController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\KafkaController;
 
 Route::get('/', [RouteController::class, 'index'])->middleware('auth');
@@ -20,6 +21,8 @@ Route::get('/StudentTasks', [RouteController::class, 'StudentTasks'])->middlewar
 Route::get('/TeacherTasks', [RouteController::class, 'TeacherTasks'])->middleware('auth');
 Route::get('/AdminClasses', [RouteController::class, 'AdminClasses'])->middleware('auth');
 Route::get('/StudentMarks', [RouteController::class, 'StudentMarks'])->middleware('auth');
+Route::get('/student-exam', [RouteController::class, 'StudentExams'])->middleware('auth');
+Route::get('/teacher-exam', [RouteController::class, 'TeacherExams'])->middleware('auth');
 Route::match(['get', 'post'], '/chat/{teacherId?}', [ChatPageController::class, 'showChatPage'])->name('chat.page')->middleware('auth');
 
 Route::get('/lessons/{date}', [ScheduleController::class, 'getLessonsByDate'])->name('lessons.by.date');
@@ -38,11 +41,15 @@ Route::post('/upload-solution',  [TaskController::class, 'uploadSolutionFile'])-
 Route::post('/upload-task/{lessonId}',  [TaskController::class, 'uploadTaskFile'])->name('task.upload');
 
 Route::post('/download-task', [TaskController::class, 'downloadTaskFile'])->name('task.download');
+
 Route::get('/download-solution/{StudentId}', [TaskController::class, 'downloadSolutionFile'])->name('solution.download');
+Route::get('/download-exam-solution/{StudentId}', [ExamController::class, 'downloadSolutionFile'])->name('solution.exam.download');
 Route::post('/mark/store', [MarkController::class, 'store'])->name('mark.store');
+Route::post('/exam-mark/store', [MarkController::class, 'ExamStore'])->name('exam.mark.store');
 Route::post('/createNews', [AdminController::class, 'createNews'])->name('createNews');
 Route::post('/createSubject', [AdminController::class, 'createSubjects'])->name('subjects.create');
 Route::post('/createClass', [AdminController::class, 'createClass'])->name('class.create');
+Route::get('/get-teachers/{subjectId}', [AdminController::class, 'getTeachers']);
 
 
 Route::post('/start-chat', [ChatPageController::class, 'startChat'])->name('start-chat');
@@ -52,4 +59,8 @@ Route::get('/produce-message', [KafkaController::class, 'produceMessage']);
 Route::get('/consume-message', [KafkaController::class, 'consumeMessage']);
 
 Route::post('/create-exam', [ExamController::class, 'createExam'])->name('create.exam');
+Route::get('/load-exams', [ExamController::class, 'loadExams'])->name('load.exams');
+Route::get('/load-tasks', [TaskController::class, 'loadTasks'])->name('load.tasks');
+
+
 

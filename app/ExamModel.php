@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExamModel extends Model
 {
-    protected $table = 'ControlTask'; 
+    protected $table = 'Exam'; 
     protected $fillable = [
+        'Name',
         'subjectId',
         'classId',
         'duration',
         'startDate',
+        'MaxMarkNumber',
         'ExamfilePath',
         'verified',
         'downloaded'
@@ -20,6 +22,10 @@ class ExamModel extends Model
     protected $attributes = [
         'verified' => false,
         'downloaded' => false,
+    ];
+    protected $casts = [
+        'startDate' => 'datetime', // Устанавливаем тип данных для startDate как datetime
+        'duration' => 'integer', // Устанавливаем тип данных для duration как integer
     ];
     public function mark()
     {

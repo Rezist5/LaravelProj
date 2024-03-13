@@ -26,7 +26,7 @@
                 </td>
             </tr>
         @endforeach
-</section>
+        </section>
 
 <section class="newShow">
     <h2>News</h2>
@@ -42,7 +42,8 @@
         @endforeach
     </div>
 </div>
-        <section class="new-task">
+</section>
+    <section class="new-task">
            
         <h2>Teacher Lessons</h2>
         <table>

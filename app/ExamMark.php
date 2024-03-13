@@ -6,15 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExamMark extends Model
 {
-    protected $table = 'ControllMarks';
+    protected $table = 'ExamMark';
     protected $fillable = [
         'MarkNumber',
-        'MaxMarkNumber',
-        'TaskId',
+        'ExamId',
         'StudentId',
     ];
-    public function task()
+    public function exam()
     {
-        return $this->belongsTo(TaskModel::class, 'TaskId', 'Id');
+        return $this->belongsTo(ExamModel::class, 'ExamId', 'Id');
     }
 }

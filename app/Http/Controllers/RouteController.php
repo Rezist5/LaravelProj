@@ -7,19 +7,22 @@ use App\Http\Controllers\ScheduleController;
 use App\Student;
 use App\Teacher;
 use App\ClassTable;
+use App\Subject;
 use Illuminate\Http\Request;
+use App\SolutionTaskModel;
 
 class RouteController extends Controller
 {
     public function index()
     {
         $userType = Auth::user()->UserType;
-                
+        //dd("1");
         $scheduleController = new ScheduleController();
         $taskController = new TaskController();
         $newsController = new NewsController();
         $todayLessons = $scheduleController->getLessonsForToday();
         $today = now()->toDateString(); 
+        
         $news = $newsController->getNews();
         $markcontroller = new MarkController();
         if($userType == 'student')
@@ -37,20 +40,23 @@ class RouteController extends Controller
         }
         else if($userType == 'admin')
         {
+            $subjects = Subject::all();
+            $teachers = Teacher::all();
             $classes = ClassTable::all();
-            return view('index', ['classes' => $classes,'today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons]);
+            return view('index', ['subjects' => $subjects , 'teachers' => $teachers,'classes' => $classes,'today'=> $today ,'userType' => $userType, 'lessons' => $todayLessons]);
         }
     }
     public function StudentTasks()
     {              
-        $scheduleController = new ScheduleController();
         $taskController = new TaskController();
-        $todayLessons = $scheduleController->getLessonsForToday();
         $today = now()->toDateString(); 
         $userType = Auth::user()->UserType;
         $stud = Student::find(Auth::user()->UserId);
         $Tasks = $taskController->getAllTasks($stud->ClassId);
-        return view('StudentTasks', ['today'=> $today ,'tasks' => $Tasks, 'userType' => $userType]);
+        $subjects = Subject::all();
+        $solTasks = SolutionTaskModel::where('StudentId', $stud->id)->get();
+        //dd($Tasks);
+        return view('StudentTasks', ['solutions' => $solTasks, 'subjects' => $subjects ,'today'=> $today ,'tasks' => $Tasks, 'userType' => $userType]);
         
     }
     public function TeacherTasks()
@@ -60,6 +66,42 @@ class RouteController extends Controller
         $teach = Teacher::find(Auth::user()->UserId)->first();
         $Tasks = $taskController->getAllUnverifiedTasks();
         return view('TeacherTasks   ', ['tasks' => $Tasks, 'userType' => $userType ]);
+        
+    }
+    public function TeacherExams()
+    {              
+        $examController = new ExamController();
+        $userType = Auth::user()->UserType;
+        $teach = Teacher::find(Auth::user()->UserId)->first();
+        $Exams = $examController->getAllUnverifiedTasks();
+        $classes = ClassTable::all();
+        // Получаем список предметов
+        $subjects = Subject::all();
+        
+        return view('teacherExams', ['exams' => $Exams, 'subjects' => $subjects, 'classes' => $classes ,'userType' => $userType ]);
+        
+    } 
+    public function StudentExams()
+    {              
+        $examController = new ExamController();
+        $today = now()->toDateString(); 
+        $userType = Auth::user()->UserType;
+        $stud = Student::find(Auth::user()->UserId);
+        
+        $Tasks = $examController->getAllTasks($stud->ClassId);
+        // Получаем список предметов
+        $subjects = Subject::all();
+        
+        // Получаем список классов
+        $classes = ClassTable::all();
+        
+        return view('studentExams', [
+            'today' => $today,
+            'exams' => $Tasks,
+            'userType' => $userType,
+            'subjects' => $subjects,
+            'classes' => $classes
+        ]);
         
     }
     public function AdminClasses()
@@ -74,7 +116,15 @@ class RouteController extends Controller
         $userType = Auth::user()->UserType;
         $markcontroller = new MarkController();
         $marksBySubject = $markcontroller->getMarksBySubject();
-        return view('StudentMarks', ['marksBySubject' => $marksBySubject, 'userType' => $userType ]);
+        $examMarksBySubject = $markcontroller->getExamMarksBySubject();
+        $totalBySubject = $markcontroller->getTotalBySubject();
+        
+        return view('StudentMarks', [
+            'marksBySubject' => $marksBySubject, 
+            'totalBySubject' => $totalBySubject,
+            'examMarksBySubject' => $examMarksBySubject, 
+            'userType' => $userType 
+        ]);
         
     }
     public function lessons()

@@ -11,7 +11,6 @@
             <option value="3">Wednesday</option>
             <option value="4">Thursday</option>
             <option value="5">Friday</option>
-            <!-- Add more options for other days if needed -->
         </select>
 
         <label for="lesson_month">Select Month:</label>
@@ -19,19 +18,28 @@
             <option value="1">January</option>
             <option value="2">February</option>
             <option value="3">March</option>
-            <!-- Add more options for other months if needed -->
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
         </select>
         <label for="selected_class">Select Class:</label>
         <select name="selected_class" id="selected_class" required>
-            <!-- Populate options based on your class data -->
             @foreach($classes as $class)
                 <option value="{{ $class->id }}">{{ $class->grade }} {{ $class->ClassName }}</option>
             @endforeach
         </select>
+        
         <table>
             <thead>
                 <tr>
-                    <th>Teacher full name</th>                  
+                    <th>Subject</th>                  
+                    <th>Teacher</th>
                     <th>Classroom</th>
                 </tr>
             </thead>
@@ -39,10 +47,18 @@
             @for($i = 1; $i <= 9; $i++)
                 <tr>
                     <td>
-                        <input type="text" name="teacher_name_{{ $i }}" >
-                        @error("teacher_name_$i")
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+                        <select name="subject_name_{{ $i }}"  class= "subject-select"required>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->id }}">{{ $subject->name }} </option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <select name="teacher_name_{{ $i }}"   class="teacher-select" required>
+                            @foreach($teachers as $teacher)
+                                <option value="{{ $subject->id }}">{{ $subject->name }} </option>
+                            @endforeach
+                        </select>
                     </td>                   
                     <td>
                         <input type="text" name="classroom_{{ $i }}" >
@@ -172,6 +188,26 @@
 </form>
 
 <script>
+    $(document).ready(function() {
+        $('.subject-select').change(function() {
+            var subjectId = $(this).val();
+            var selectElement = $(this).closest('tr').find('.teacher-select');
+            // Очищаем список учителей
+            selectElement.empty();
+            // Запрашиваем учителей с помощью AJAX
+            $.ajax({
+                url: '/get-teachers/' + subjectId, // Путь к маршруту, который вернет учителей для выбранного предмета
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    // Добавляем опции учителей в список
+                    $.each(response.teachers, function(index, teacher) {
+                        selectElement.append('<option value="' + teacher.id + '">' + teacher.name + '</option>');
+                    });
+                }
+            });
+        });
+    });
     function showFields(userType) {
         document.getElementById('adminFields').style.display = userType === 'admin' ? 'block' : 'none';
         document.getElementById('studentFields').style.display = userType === 'student' ? 'block' : 'none';

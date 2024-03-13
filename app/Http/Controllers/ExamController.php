@@ -3,9 +3,65 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\ExamModel;
+use App\SolutionExamModel;
+use Illuminate\Support\Facades\Auth;
+use App\Student;
+use App\Subject;
+use App\Teacher;
+use App\ClassTable;
+use Carbon\Carbon;
 
-class ExamController extends Controller implements ExamInterface
+
+class ExamController extends Controller implements TaskInterface
 {
+    public function loadExams(Request $request)
+    {
+        try {
+            $subject = $request->get('subject');
+            $classId = $request->get('classId');
+            $date = $request->get('date');
+
+            $exams = ExamModel::query();
+
+            if ($subject) {
+                $exams->where('subjectId', $subject);
+            }
+
+            if ($classId) {
+                $exams->where('classId', $classId);
+            }
+
+            if ($date) {
+                $exams->whereDate('startDate', $date);
+            }
+
+            $filteredExams = $exams->get();
+
+            $subjects = Subject::all();
+            $today = now()->toDateString(); 
+            $userType = Auth::user()->UserType;
+            // Получаем список классов
+            $classes = ClassTable::all();
+            if(Auth::user()->UserType == 'teacher')
+            {
+                return view('examTeacherTable', [
+                    'exams' => $filteredExams,
+                ]);
+            }
+            else
+            {
+                return view('examTable', [
+                    'exams' => $filteredExams,
+    
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+           echo "Error: " . $e->getMessage();
+           return 0;
+        }
+    }
     public function getTop3Tasks($classId)
     {
         $studId = Auth::user()->UserId;
@@ -29,30 +85,28 @@ class ExamController extends Controller implements ExamInterface
     }
     public function createExam(Request $request)
     {
-        $validatedData = $request->validate([
-            'subject' => 'required',
-            'class' => 'required',
-            'duration' => 'required',
-            'startDate' => 'required',
-            'examFile' => 'required|file',
-        ]);
-
+        $teacher = Teacher::where('Id', Auth::user()->UserId)->first();
         $exam = new ExamModel;
-        $exam->subjectId = $request->input('subject');
+        $exam->subjectId = $teacher->subject->id;
+        $exam->Name = $request->input('Name');
         $exam->classId = $request->input('class');
         $exam->duration = $request->input('duration');
+        $exam->MaxMarkNumber = $request->input('MaxMarkNumber');
         $exam->startDate = $request->input('startDate');
-
+        //dd($request->hasFile('examFile'));
         if ($request->hasFile('examFile')) {
             $file = $request->file('examFile');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('exam_files', $fileName);
             $exam->ExamfilePath = $filePath;
         }
-
+        else
+        {
+            return redirect()->back()->with('error', 'Файл контрольной работы не был загружен.');
+        }
         $exam->save();
 
-        return redirect('/exams')->with('success', 'Контрольная работа успешно создана!');
+        return redirect()->back()->with('success', 'Контрольная работа успешно создана!');
     }
     public function getAllUnverifiedTasks()
     {
@@ -66,14 +120,14 @@ class ExamController extends Controller implements ExamInterface
     }
     public function getAllTasks($classId)
     {
-        $Tasks = ExamModel::where('classId', $classId)->orderBy('deadline', 'desc')
-            ->get();
+        $today = Carbon::now()->toDateString();
 
-        $taskIds = $Tasks->pluck('id');
+        $tasks = ExamModel::where('startDate', '<=', $today) // startDate меньше или равен сегодняшней дате
+                    ->whereRaw('DATE_ADD(startDate, INTERVAL duration HOUR) >= ?', [$today]) // startDate + duration больше или равно сегодняшней дате
+                    ->where('classId', $classId)
+                    ->get();
 
-        $solutions = SolutionExamModel::whereIn('taskId', $taskIds)->get();
-
-        return $solutions;
+        return $tasks;
     }
     // Действие для загрузки заданий учителями
         public function uploadTaskFile(Request $request)
@@ -154,17 +208,17 @@ class ExamController extends Controller implements ExamInterface
         public function downloadSolutionFile(Request $request)
         {
             $studId = $request->StudentId;
-            $lessonId = $request->lessonId;
+            $examId = $request->exam;
             
-            $task = ExamModel::where('lessonId', $lessonId)->first();
-            $SolTask = SolutionExamModel::where('StudentId', $studId)
-            ->where('TaskId', $task->id)
+            $exam = ExamModel::where('Id', $examId)->first();
+            $SolExam = SolutionExamModel::where('StudentId', $studId)
+            ->where('ExamId', $examId)
             ->first();
                     
             if (!$SolTask) {
                 return redirect()->back()->withErrors(['message' => 'Solution file not found.']);
             }
-            $filePath = $SolTask->SolutionFilePath;
+            $filePath = $SolExam->SolutionFilePath;
             $file = storage_path('app/' . $filePath);
         
             if (!file_exists($file)) {

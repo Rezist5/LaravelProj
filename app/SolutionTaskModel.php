@@ -21,7 +21,7 @@ class SolutionTaskModel extends Model
     ];
     public function task()
     {
-        return $this->belongsTo(TaskModel::class, 'TaskId', 'Id');
+        return $this->belongsTo(TaskModel::class, 'TaskId');
     }
     public function student()
     {
